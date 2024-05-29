@@ -1,0 +1,82 @@
+/*
+https://eduarmandov.files.wordpress.com/2017/05/c_c-data-structures-and-algorithms-in-c.pdf#page=145
+*/
+
+#ifndef G_LISTA_H
+#define G_LISTA_H
+
+#include <stdbool.h> //bool
+#include <iostream>
+using namespace std;
+template <typename E> class lista; // Wstępna deklaracja szablonu klasy lista
+
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/ Klasa  node \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+template <typename E>
+class node { /* pojedynczy elemnet listy */
+private:
+  E elem;
+  node<E> *next; /* Wskaźnik typu klasy wagon na następny element listy */
+  friend class lista<E>;
+};
+
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/ Klasa lista \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+template <typename E>
+class lista {
+
+public:
+  lista() : head(nullptr),node_number(0) {}
+  ~lista() { while (!empty()) removeFront(); }
+  bool empty() const;              // czy lista jest pusta?
+  const E &front() const;          // zwróć pierwszy element.
+  void addFront(const E &dane);    // Dodaj dane na początek listy.
+  void removeFront();              // Usuń pierwszy element listy.
+
+  int get_nodeNumber() const {return node_number;}
+  const E& get_elem(node<E>* ptr) const {return ptr->elem;}
+  node<E>* get_head() const {return head;}
+  node<E>* get_next(node<E>* ptr) const {return ptr->next;};
+
+private:
+  node<E> *head;
+  unsigned int node_number;
+};
+#endif
+
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/  Definicje funkcji  \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+
+template <typename E>
+bool lista<E>::empty() const {
+  return head == nullptr; 
+}
+
+template <typename E>
+const E& lista<E>::front() const {
+  if (empty()) {
+    throw std::out_of_range
+      ("Returning empty list.\n           G_lista_def.h -> front()");
+  }
+  return head->elem;
+}
+
+template <typename E> 
+void lista<E>::addFront(const E& dane) { // add to front of list
+  node<E>* v = new node<E>;
+  v->elem = dane;
+  v->next = head;
+  head = v;
+  ++node_number;
+}
+
+template <typename E>
+void lista<E>::removeFront() {
+  if (empty()) {
+    throw std::out_of_range
+      ("Removing empty list.\n           G_lista_def.h -> removeFront()");
+  }
+  node<E>* old = head;
+  head = old->next;
+  delete old;
+  --node_number;
+}
