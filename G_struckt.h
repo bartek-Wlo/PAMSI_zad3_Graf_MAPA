@@ -5,9 +5,8 @@
 struct miasto {
   std::string name;
   std::string id;
-  unsigned int latitude;
-  unsigned int longitude;
-  
+  double latitude;
+  double longitude;
 };
 
 struct polaczenia{

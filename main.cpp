@@ -3,7 +3,8 @@
 
 int main() {
   std::cout << "Hello World!\n";
-  test();
+  //test();
+  graf GRAF;
   
   return 0;
 }

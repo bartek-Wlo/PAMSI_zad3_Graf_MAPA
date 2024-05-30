@@ -3,7 +3,7 @@
 
 #include "G_struckt.h"
 #include "G_lista.h"
-#include "json.hpp" /* https://github.com/nlohmann/json/blob/develop/single_include/nlohmann/json.hpp */
+#include "json.hpp" /* [1.] */
 #include <fstream>
 using json = nlohmann::json;
 
@@ -23,3 +23,11 @@ public:
 };
 
 #endif
+
+/* Źródła kodu:
+1. https://github.com/nlohmann/json/blob/develop/single_include/nlohmann/json.hpp
+2. https://cpp0x.pl/kursy/Kurs-C++/Dodatkowe-materialy/Obsluga-plikow/305
+3. https://learn.microsoft.com/pl-pl/cpp/cpp/try-throw-and-catch-statements-cpp?view=msvc-170
+4.
+
+*/
