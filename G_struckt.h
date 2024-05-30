@@ -13,8 +13,8 @@ struct polaczenia{
   std::string city_1;
   std::string city_2;
   std::string road_name;
-  char road_type;
-  unsigned int distance;
+  std::string road_type;
+  double distance;
 };
 
 #endif

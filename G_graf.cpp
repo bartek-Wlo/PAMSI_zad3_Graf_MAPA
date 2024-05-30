@@ -4,9 +4,7 @@ graf::graf() {
   lista_miast = new lista<miasto>;
   lista_polaczen = new lista<polaczenia>;
 
-  try {load();}
-  catch (const std::exception& e) {cerr<<"Exception: "<<e.what()<<endl;} /*[3.]*/
-  //load();
+  file_name = "kujawsko-pomorskie.json";
 }
 
 graf::~graf() {
@@ -20,21 +18,11 @@ graf::~graf() {
   tablica_indeksow_miast = nullptr;
 }
 
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\   LOAD  /‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 void graf::load() {
-  json data_json;
-  ifstream plik("kujawsko-pomorskie.json", std::ios::in); /*[2.]*/
-  
-  if (!plik) {
-    throw std::runtime_error /*[3.]*/
-      ("Can not open file.\n           G_graf.cpp -> load()");
-    return;
-  }
-  try { data_json = json::parse(plik); } /*[3.]*/
-  catch (json::parse_error& e) {
-    cerr << "Parse error: " << e.what() << endl;
-    return;
-  }
-  plik.close();
+  open();
   
   for (const auto& city : data_json["cities"]) {
     lista_miast->addFront({
@@ -45,19 +33,55 @@ void graf::load() {
     });
   }
 
-  miasto tmp;
-  node<miasto>* miasto_ptr = lista_miast->get_head();
-  cout << lista_miast->get_nodeNumber() << endl;
-  while(miasto_ptr != nullptr) {
-    tmp = lista_miast->get_elem(miasto_ptr);
+  for (const auto& road : data_json["connections"]) {
+    lista_polaczen->addFront({
+      road["city_1"].get<string>(),
+      road["city_2"].get<string>(),
+      road["road_name"].get<string>(),
+      road["road_type"].get<string>(),
+      road["distance"].get<double>()
+    });
+  }
+}
+
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_  OPEN & CLOSE _/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+void graf::open() {
+  ifstream plik(file_name, std::ios::in); /*[2.]*/
+  
+  if ( ! plik) {
+    throw std::runtime_error ("Can not open file: \"" + file_name 
+             + "\"\n           G_graf.cpp -> open()");
+  }  /*[3.]*/
+  
+  data_json = json::parse(plik); /*[1.]*/
+  /* json::parse() może throw parse error. */
+  plik.close();
+}
+
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/  add ARRRAY  ptr's  \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+
+void graf::add_ARRRAY_ptrs() {
+  node<miasto>* miasto_ptr = lista_miast->get_head();       /* ptr -> head */
+  node<polaczenia>* polaczenia_ptr = lista_polaczen->get_head();
+
+  /* Jeżeli tablice już istnieją, to robimy nowe, usuwając stare */
+  if(tablica_indeksow_miast != nullptr) { delete[] tablica_indeksow_miast;}
+  if(tablica_sasiedztwa != nullptr) { delete[] tablica_sasiedztwa;}
+  
+  tablica_indeksow_miast = new node<miasto>*[lista_miast->get_nodeNumber()];
+  tablica_sasiedztwa = new node<polaczenia>*[lista_polaczen->get_nodeNumber()];
+
+  for (int i=0; miasto_ptr != nullptr; ++i) {
+    tablica_indeksow_miast[i] = miasto_ptr;
     miasto_ptr = lista_miast->get_next(miasto_ptr);
-    std::cout << " name: "<<tmp.name
-      /* << " id:   "<<tmp.id
-      << " lati: "<<tmp.latitude
-      << " long: "<<tmp.longitude */
-      << std::endl;
   }
 
+  for (int i=0; polaczenia_ptr != nullptr; ++i) {
+    tablica_sasiedztwa[i] = polaczenia_ptr;
+    polaczenia_ptr = lista_polaczen->get_next(polaczenia_ptr);
+  }
 }
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
@@ -130,3 +154,64 @@ tablica_indeksow_miast = nullptr;
 graf GRAF;
 }
 
+
+
+
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\  DEBUG display  /‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/* DEBUG display list - miasto */
+    // miasto tmp;
+    // node<miasto>* miasto_ptr = lista_miast->get_head();
+    // cout << lista_miast->get_nodeNumber() << endl;
+    // while(miasto_ptr != nullptr) {
+    //   tmp = lista_miast->get_elem(miasto_ptr);
+    //   miasto_ptr = lista_miast->get_next(miasto_ptr);
+    //   std::cout 
+    //     << " id: " << left << setw(20) << tmp.id
+    //     << " lati: " << left << setw(10) << tmp.latitude
+    //     << " long: " << left << setw(10) << tmp.longitude
+    //     << " name: " << left << setw(20) << tmp.name
+    //     << std::endl; /* setw() [4.] */
+    // }
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/* DEBUG display array - miasto */
+    // miasto tmp;
+    // for(int i = 0; i < lista_miast->get_nodeNumber(); ++i) {
+    //   tmp = lista_miast->get_elem(tablica_indeksow_miast[i]);
+    //   std::cout 
+    //     << " id: " << left << setw(20) << tmp.id
+    //     << " lati: " << left << setw(10) << tmp.latitude
+    //     << " long: " << left << setw(10) << tmp.longitude
+    //     << " name: " << left << setw(20) << tmp.name
+    //     << std::endl; /* setw() [4.] */
+    // }
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/* DEBUG display list - polaczenia */
+    // polaczenia tmp2;
+    // node<polaczenia>* polaczenia_ptr = lista_polaczen->get_head();
+    // cout << lista_polaczen->get_nodeNumber() << endl;
+    // while(polaczenia_ptr != nullptr) {
+    //   tmp2 = lista_polaczen->get_elem(polaczenia_ptr);
+    //   polaczenia_ptr = lista_polaczen->get_next(polaczenia_ptr);
+    //   std::cout 
+    //     << " city_1: " << left << setw(20) << tmp2.city_1
+    //     << " city_2: " << left << setw(20) << tmp2.city_2
+    //     << " road_name: " << left << setw(6) << tmp2.road_name
+    //     << " road_type: " << left << setw(3) << tmp2.road_type
+    //     << " distance: " << left << setw(5) << tmp2.distance
+    //     << std::endl; /* setw() [4.] */
+    // }
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/* DEBUG display array - polaczenia */
+    // polaczenia tmp2;
+    // for(int i = 0; i < lista_polaczen->get_nodeNumber(); ++i) {
+    //   tmp2 = lista_polaczen->get_elem(tablica_sasiedztwa[i]);
+    //   std::cout 
+    //     << " city_1: " << left << setw(20) << tmp2.city_1
+    //     << " city_2: " << left << setw(20) << tmp2.city_2
+    //     << " road_name: " << left << setw(6) << tmp2.road_name
+    //     << " road_type: " << left << setw(3) << tmp2.road_type
+    //     << " distance: " << left << setw(5) << tmp2.distance
+    //     << std::endl; /* setw() [4.] */
+    // } 

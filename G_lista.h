@@ -10,7 +10,9 @@ https://eduarmandov.files.wordpress.com/2017/05/c_c-data-structures-and-algorith
 using namespace std;
 template <typename E> class lista; // Wstępna deklaracja szablonu klasy lista
 
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/ Klasa  node \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 template <typename E>
 class node { /* pojedynczy elemnet listy */
 private:
@@ -19,7 +21,9 @@ private:
   friend class lista<E>;
 };
 
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/ Klasa lista \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 template <typename E>
 class lista {
 
@@ -42,6 +46,8 @@ private:
 };
 #endif
 
+
+
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/  Definicje funkcji  \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
@@ -51,6 +57,7 @@ bool lista<E>::empty() const {
   return head == nullptr; 
 }
 
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 template <typename E>
 const E& lista<E>::front() const {
   if (empty()) {
@@ -60,6 +67,7 @@ const E& lista<E>::front() const {
   return head->elem;
 }
 
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 template <typename E> 
 void lista<E>::addFront(const E& dane) { // add to front of list
   node<E>* v = new node<E>;
@@ -69,6 +77,7 @@ void lista<E>::addFront(const E& dane) { // add to front of list
   ++node_number;
 }
 
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 template <typename E>
 void lista<E>::removeFront() {
   if (empty()) {
