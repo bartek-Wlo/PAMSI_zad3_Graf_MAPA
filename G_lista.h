@@ -36,7 +36,7 @@ public:
   void removeFront();              // Usuń pierwszy element listy.
 
   int get_nodeNumber() const {return node_number;}
-  const E& get_elem(node<E>* ptr) const {return ptr->elem;}
+  const E& get_elem(node<E>* ptr) const;
   node<E>* get_head() const {return head;}
   node<E>* get_next(node<E>* ptr) const;
 
@@ -59,7 +59,7 @@ template <typename E>
 const E& lista<E>::front() const {
   if (empty()) {
     throw std::out_of_range
-      ("Returning empty list.\n           G_lista_def.h -> front()");
+      ("Returning empty list.\n           G_lista.h -> front()");
   }
   return head->elem;
 }
@@ -79,7 +79,7 @@ template <typename E>
 void lista<E>::removeFront() {
   if (empty()) {
     throw std::out_of_range
-      ("Removing empty list.\n           G_lista_def.h -> removeFront()");
+      ("Removing empty list.\n           G_lista.h -> removeFront()");
   }
   node<E>* old = head;
   head = old->next;
@@ -89,10 +89,28 @@ void lista<E>::removeFront() {
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 template <typename E>
+const E& lista<E>::get_elem(node<E>* ptr) const {
+  if (empty()) {
+    throw std::out_of_range
+      ("Returning in empty list.\n           G_lista.h -> get_elem(node<E>*)");
+  }
+  if (ptr == nullptr) {
+    throw std::invalid_argument 
+      ("node<E>* ptr == nullptr\n           G_lista.h -> get_elem(node<E>*)");
+  }
+  return ptr->elem;
+}
+
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+template <typename E>
 node<E>* lista<E>::get_next(node<E>* ptr) const {
   if (empty()) {
     throw std::out_of_range
-      ("Moving in empty list.\n           G_lista_def.h -> get_next(node<E>*)");
+      ("Moving in empty list.\n           G_lista.h -> get_next(node<E>*)");
+  }
+  if (ptr == nullptr) {
+    throw std::invalid_argument
+      ("node<E>* ptr == nullptr\n           G_lista.h -> get_next(node<E>*)");
   }
   return ptr->next;
 };

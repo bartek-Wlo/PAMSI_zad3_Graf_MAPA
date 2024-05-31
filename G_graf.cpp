@@ -1,23 +1,27 @@
 #include "G_graf.h"
 
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/ KONSTRUKTOR \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
 graf::graf() {
   size_TAB_sasiedztwa = 0;
   lista_miast = new lista<miasto>;
   lista_polaczen = new lista<polaczenia>;
 
-  file_name = "kujawsko-pomorskie.json";
+  file_name = "lubuskie.json";
 
 }
 
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/ DESTRUKTOR  \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
 graf::~graf() {
   delete lista_miast;
   delete lista_polaczen;
-  
+
+  /* Node'y wskazywane przez liste wskaźniów wazywanej przez tablice wsk.  */
+  /* Czyli lista_polaczen zostały już usunięte.         tablica_sasiedztwa */
   for(unsigned int i = 0; i < size_TAB_sasiedztwa; ++i) {
     delete tablica_sasiedztwa[i];
-  }
-  /* Listy wskaźników z tablica_sasiedztwa -> 
-     wskazują na już usunięte lista_polaczen */
+  } /* Więc można usunąć listy "bez" usuwania ich zawartości.              */
   
   delete[] tablica_sasiedztwa;
   delete[] tablica_indeksow_miast;
@@ -72,84 +76,132 @@ void graf::open() {
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 
 void graf::add_ARRRAY_ptrs() {
+  /* ################ Inicjalizacja  zmienej i wskaźników ################ */
   node<miasto>* miasto_ptr = lista_miast->get_head();       /* ptr -> head */
   node<polaczenia>* polaczenia_ptr = lista_polaczen->get_head();
-  indeks_map.clear(); /* Czyszczenie mapowania tablicy wskaźników */
-  /* */ unsigned int ind;
-  
-  /* Jeżeli tablice już istnieją, to usuwa stare    */
-  /* USUWA tablice wskaźników na node'y typu miasto */
-  if(tablica_indeksow_miast != nullptr) { delete[] tablica_indeksow_miast;}
-  if(tablica_sasiedztwa != nullptr) { 
-    /* USUWA listy wskaźników na node'y typu połączenia */
-    for(unsigned int i = 0; i < size_TAB_sasiedztwa; ++i) 
-      { delete tablica_sasiedztwa[i]; }
-    /* USUWA tablice wskaźników na listy */
-    delete[] tablica_sasiedztwa;
+  unsigned int ind;
+
+  /* ############## Warunkowa reinicjalizacja tablic i mapy ############## */
+  /*                           1. Czyszczenie mapowania tablicy wskaźników */
+  /*                     2. USUWA tablice wskaźników na node'y typu miasto */
+  /*         3. Usuwanie tab. wsk. na liste wsk. na node'y typu połączenia */
+  /*         3.1.  USUWA poszczególne listy wsk. na node'y typu połączenia */
+  /*                               3.2.  USUWA tablice wskaźników na listy */
+  indeks_map.clear(); /*                                                1. */
+  if(tablica_indeksow_miast != nullptr) 
+    { delete[] tablica_indeksow_miast;} /*                              2. */
+  if(tablica_sasiedztwa != nullptr) { /*                                3. */
+    for(unsigned int i = 0; i < size_TAB_sasiedztwa; ++i)  
+      { delete tablica_sasiedztwa[i]; } /*                            3.1. */
+    delete[] tablica_sasiedztwa; /*                                   3.2. */
   }
+
+  /* ################# Wczytuje aktualną wielkość tablic ################# */
   size_TAB_sasiedztwa = lista_miast->get_nodeNumber();
 
-  /* TWORZY tablice wskaźników na node'y typu miasto */
-  tablica_indeksow_miast = new node<miasto>* [size_TAB_sasiedztwa];
-  /* TWORZY tablice wskaźników na listy */
+  /* ##################### Inicjalizuje nowe tablice ##################### */
+  /*                    1. TWORZY tablice wskaźników na node'y typu miasto */
+  /*                            2. TWORZY tablice wskaźników na listy wsk. */
+  /*                  3. TWORZY listy wskaźników na node'y typu połączenia */
+  tablica_indeksow_miast = new node<miasto>* [size_TAB_sasiedztwa]; /*  1. */
   tablica_sasiedztwa = new lista<node<polaczenia>*>* [size_TAB_sasiedztwa];
-  /* TWORZY listy wskaźników na node'y typu połączenia */
-  for(unsigned int i = 0; i < size_TAB_sasiedztwa; ++i)
-    { tablica_sasiedztwa[i] = new lista<node<polaczenia>*>; }
-  
+  for(unsigned int i = 0; i < size_TAB_sasiedztwa; ++i)            /* ^ 2. */
+    { tablica_sasiedztwa[i] = new lista<node<polaczenia>*>; } /*        3. */
+
+  /* ############# WYPEŁNIA  tab. wsk. na node'y typu miasto ############# */
+  /*            1. PRZYPISUJE kolejne wskaźniki z lista_miast do tab. wsk. */
+  /*                                         2. MAPUJE nazwy string na int */
+  /*                         3. PRZESUWA wsk. na następny elem lista_miast */
   for (int i=0; miasto_ptr != nullptr; ++i) {
-    tablica_indeksow_miast[i] = miasto_ptr;
-    indeks_map[ lista_miast->get_elem(miasto_ptr).id ] = i; /*[5.]*/
-    miasto_ptr = lista_miast->get_next(miasto_ptr);
-  }
+    tablica_indeksow_miast[i] = miasto_ptr; /*                          1. */
+    indeks_map[ lista_miast->get_elem(miasto_ptr).id ] = i; /*[5.]      2. */
+    miasto_ptr = lista_miast->get_next(miasto_ptr); /*                  3. */
+  } /* Wskaźnik miasto_ptr idzie po każdym elemencie listy lista_miast.    */
 
-  for (int i=0; i < lista_miast->get_nodeNumber(); ++i) {
-    tablica_sasiedztwa[i] = nullptr;
-  }
+  /* ######## WYPEŁNIA tab. wsk. na list wsk. na node typu miasto ######## */
+  /*              1. Iteracja po wszytkich elemętach listy: lista_polaczen */
+  /*                       2. city ID -> indeks tablicy (dzięki mapowaniu) */
+  /*                          3. Dodawanie do listy wsk. w tab nowego wsk. */
+  /*                      4. PRZESUWA wsk. na następny elem lista_polaczen */
+  while (polaczenia_ptr != nullptr) { /*                                1. */
+    ind = indeks_map[ lista_polaczen->get_elem(polaczenia_ptr).city_1 ];// 2.
+    tablica_sasiedztwa[ind]->addFront(polaczenia_ptr); /*               3. */
 
-  /* Ta pętla porusza się na orginalnej liście (lista_polaczen) */
-  while (polaczenia_ptr != nullptr) {
-    ind = indeks_map[ lista_polaczen->get_elem(polaczenia_ptr).city_1 ];
-    if (tablica_sasiedztwa[ind] == nullptr) throw std::runtime_error ("xx");
-    tablica_sasiedztwa[ind]->addFront(polaczenia_ptr);
-
-    ind = indeks_map[ lista_polaczen->get_elem(polaczenia_ptr).city_2 ];
-    tablica_sasiedztwa[ind]->addFront(polaczenia_ptr);
+    ind = indeks_map[ lista_polaczen->get_elem(polaczenia_ptr).city_2 ];// 2.
+    tablica_sasiedztwa[ind]->addFront(polaczenia_ptr); /*               3. */
     
-    polaczenia_ptr = lista_polaczen->get_next(polaczenia_ptr);
+    polaczenia_ptr = lista_polaczen->get_next(polaczenia_ptr); /*       4. */
+  } /* Wsk. polaczenia_ptr idzie po każdym elemencie listy lista_polaczen. */
+}
+
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/   GETTERS   \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+
+node<miasto>* graf::get_city_wsk_by_id(string id) const {
+  try {
+    return tablica_indeksow_miast[indeks_map.at(id)];
+  } catch (const std::exception& e) {
+    cerr 
+      << "Exception: " << e.what() << endl
+      << "     type: "<< typeid(e).name() << endl
+      << "      fun: G_graf.cpp -> node<miasto>* get_city_wsk_by_id(string)"
+      << endl;
+    return nullptr;
+  }
+}
+
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+node<polaczenia>* graf::get_road(node<miasto>* c1, node<miasto>* c2) const {
+  if (c1 == nullptr || c2 == nullptr) {
+    throw std::invalid_argument ("node<miasto>* == nullptr\n           G_graf.cpp -> get_road(node<miasto>*,node<miasto>*)");
+  }
+  if (lista_miast->empty() || lista_polaczen->empty()) {
+    throw std::invalid_argument ("List.empty() == TRUE\n           G_graf.cpp -> get_road(node<miasto>*,node<miasto>*)");
   }
 
+  int inde = indeks_map.at(lista_miast->get_elem(c1).id);
+  polaczenia str_pol;
+  node<node<polaczenia>*>* ptr = tablica_sasiedztwa[inde] -> get_head();
   
-  // polaczenia tmp2;
-  // for (int i=0; i < lista_miast->get_nodeNumber(); ++i) {
-  //   if (tablica_sasiedztwa[i] == nullptr) cout << i << ". nullptr" << endl;
-  //   else {
-  //     tmp2 = lista_polaczen->get_elem(tablica_sasiedztwa[i]);
-  //     cout
-  //       << setw(3) << i << ". "
-  //     << endl; /* setw() [4.] */
-  //     pol_ptr = tablica_sasiedztwa[i];
-  //     while (pol_ptr != nullptr) {
-  //       tmp2 = lista_polaczen->get_elem(pol_ptr);
-  //       cout
-  //         << "   |"
-  //         << " city_1: " << left << setw(20) << tmp2.city_1
-  //         << " city_2: " << left << setw(20) << tmp2.city_2
-  //         << " road_name: " << left << setw(6) << tmp2.road_name
-  //         << " road_type: " << left << setw(3) << tmp2.road_type
-  //         << " distance: " << left << setw(5) << tmp2.distance
-  //       << endl; /* setw() [4.] */
-  //       pol_ptr = lista_polaczen->get_elem(pol_ptr).next_pol;
-  //     }    
-  //   }
-  // }
+  while (ptr != nullptr) {
+    str_pol = lista_polaczen->get_elem(tablica_sasiedztwa[inde]->get_elem(ptr));
+    if (str_pol.city_1 == lista_miast->get_elem(c1).id &&
+        str_pol.city_2 == lista_miast->get_elem(c2).id) {
+      return tablica_sasiedztwa[inde]->get_elem(ptr);
+    }
+    else if (str_pol.city_1 == lista_miast->get_elem(c2).id &&
+             str_pol.city_2 == lista_miast->get_elem(c1).id) {
+      return tablica_sasiedztwa[inde]->get_elem(ptr);
+    }
+    ptr = tablica_sasiedztwa[inde] -> get_next(ptr);
+  }
+  throw std::logic_error  ("There is no road connecting both cities\n           G_graf.cpp -> get_road(node<miasto>*,node<miasto>*)");
+}
 
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\ curve  distance /‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*           https://en.wikipedia.org/wiki/Geographical_distance           */
+/*           https://www.calculator.net/distance-calculator.html           */
+/*                           Haversine  formula:                           */
+/* d = 2R * asin{ √[ sin²((φ1-φ2)/2) + cosφ1 * cosφ2 * sin²((λ1-λ2)/2) ] } */
+
+double graf::curve_distance(node<miasto>* c1, node<miasto>* c2) {
+  static const int R2 = 2*6371; /* [km] */
+  double lat1 = (lista_miast->get_elem(c1).latitude ) * (M_PI / 180.0);
+  double lat2 = (lista_miast->get_elem(c2).latitude ) * (M_PI / 180.0);
+  double lon1 = (lista_miast->get_elem(c1).longitude) * (M_PI / 180.0);
+  double lon2 = (lista_miast->get_elem(c2).longitude) * (M_PI / 180.0);
+  return R2 * asin(
+    sqrt(
+      pow( sin((lat1-lat2)/2) , 2 ) 
+      + cos(lat1) 
+      * cos(lat2) 
+      * pow( sin((lon1-lon2)/2) , 2 )
+    )
+  );
   
-  // cout 
-  //   << lista_miast->get_elem( tablica_indeksow_miast[
-  //     indeks_map["AleksandrowKujawski"]
-  //   ] ).name
-  //   << endl;
 }
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
@@ -203,31 +255,60 @@ node<miasto>* graf::opposite(node<miasto>* c1, node<polaczenia>* road) const {
 };
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/ areAdjacent \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+bool graf::areAdjacent(node<miasto>* c1, node<miasto>* c2) {
+  int inde = indeks_map [ lista_miast->get_elem(c1).id ];
+  polaczenia str_pol;
+  node<node<polaczenia>*>* ptr = tablica_sasiedztwa [inde] -> get_head();
+  while (ptr != nullptr) {  
+    str_pol = lista_polaczen->get_elem(tablica_sasiedztwa[inde]->get_elem(ptr));
+    if (str_pol.city_1 == lista_miast->get_elem(c1).id &&
+        str_pol.city_2 == lista_miast->get_elem(c2).id) { return true; }
+    else if (str_pol.city_1 == lista_miast->get_elem(c2).id &&
+        str_pol.city_2 == lista_miast->get_elem(c1).id) { return true; }
+    ptr = tablica_sasiedztwa[inde] -> get_next(ptr);
+  }
+  return false;
+}
+
+
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
-/* START ##### GRAF ##### START */
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+
 void graf::test() {
   miasto tmp;
-  node<miasto>* A1 = lista_miast->get_head();
-  node<miasto>* A2 = nullptr;
-  node<polaczenia>* D1 = lista_polaczen->get_head();
+  node<miasto>* A1 = get_city_wsk_by_id("Bogatynia");
+  node<miasto>* A2 = get_city_wsk_by_id("Sejny");
+  node<polaczenia>* D1 = nullptr;
 
-  D1 = lista_polaczen->get_next(D1); D1 = lista_polaczen->get_next(D1);
-  A1 = lista_miast->get_next(A1); A1 = lista_miast->get_next(A1);
-  A2 = opposite(A1, D1);
-  tmp = lista_miast->get_elem(A1);
+  cout << "curve_distance: " << curve_distance(A1, A2) << endl;
+  if (areAdjacent(A1, A2)) {
+    cout << "A1 and A2 are adjacent" << endl;
+    D1 = get_road(A1, A2);
+  } else {
+    cout << "A1 and A2 are NOT adjacent, error incoming!" << endl;
+    D1 = get_road(A1, A2);
+  }
   std::cout 
     << " city_1: " << left << setw(20) << lista_polaczen->get_elem(D1).city_1
     << " city_2: " << left << setw(20) << lista_polaczen->get_elem(D1).city_2
     << " road_name: " <<left<<setw(20) << lista_polaczen->get_elem(D1).road_name
+    << std::endl << "                             "
+    << " road_type: " <<left<<setw(5) << lista_polaczen->get_elem(D1).road_type
+    << " distance: " <<left<<setw(10) << lista_polaczen->get_elem(D1).distance
     << std::endl; /* setw() [4.] */
+  
+  tmp = lista_miast->get_elem(A1);
   std::cout 
     << " id: " << left << setw(20) << tmp.id
     << " lati: " << left << setw(10) << tmp.latitude
     << " long: " << left << setw(10) << tmp.longitude
     << " name: " << left << setw(20) << tmp.name
     << std::endl; /* setw() [4.] */
+  
   tmp = lista_miast->get_elem(A2);
   std::cout 
     << " id: " << left << setw(20) << tmp.id
@@ -255,6 +336,7 @@ void graf::test() {
     //     << " name: " << left << setw(20) << tmp.name
     //     << std::endl; /* setw() [4.] */
     // }
+
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 /* DEBUG display array - miasto */
     // miasto tmp;
@@ -267,6 +349,7 @@ void graf::test() {
     //     << " name: " << left << setw(20) << tmp.name
     //     << std::endl; /* setw() [4.] */
     // }
+
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 /* DEBUG display list - polaczenia */
     // polaczenia tmp2;
@@ -283,6 +366,7 @@ void graf::test() {
     //     << " distance: " << left << setw(5) << tmp2.distance
     //     << std::endl; /* setw() [4.] */
     // }
+
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 /* DEBUG display array - polaczenia */
     // polaczenia tmp2;
@@ -296,3 +380,30 @@ void graf::test() {
     //     << " distance: " << left << setw(5) << tmp2.distance
     //     << std::endl; /* setw() [4.] */
     // } 
+
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/* DEBUG display array of poiters to list of pointers to list               
+(tablica_sasiedztwa) Można wstawić na koniec funkcji -> add_ARRRAY_ptrs()  */
+    // cout << "miast "<< lista_miast->get_nodeNumber() << " polaczen " << lista_polaczen->get_nodeNumber() << endl;
+    // polaczenia tmp2;
+    // node<node<polaczenia>*>* tab_list_ptr = nullptr;
+    // for (int i=0; i < lista_miast->get_nodeNumber(); ++i) {
+    //   tab_list_ptr = tablica_sasiedztwa[i]->get_head();
+    //   std::cout << i << ".   " 
+    //     << lista_miast->get_elem( tablica_indeksow_miast[i] ).name 
+    //     << endl;
+    
+    //   while(tab_list_ptr != nullptr) {
+    //     tmp2 = lista_polaczen->get_elem(
+    //       tablica_sasiedztwa[i]->get_elem(tab_list_ptr)
+    //     );
+    //     tab_list_ptr = tablica_sasiedztwa[i]->get_next(tab_list_ptr);
+    //     std::cout 
+    //       << " city_1: " << left << setw(20) << tmp2.city_1
+    //       << " city_2: " << left << setw(20) << tmp2.city_2
+    //       << " road_name: " << left << setw(6) << tmp2.road_name
+    //       << " road_type: " << left << setw(3) << tmp2.road_type
+    //       << " distance: " << left << setw(5) << tmp2.distance
+    //       << std::endl; /* setw() [4.] */
+    //   }
+    // }
