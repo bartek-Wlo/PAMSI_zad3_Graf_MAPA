@@ -16,7 +16,6 @@ struct polaczenia{
   std::string road_name;
   std::string road_type;
   double distance;
-  node<polaczenia>* next_pol = nullptr;
 };
 
 #endif

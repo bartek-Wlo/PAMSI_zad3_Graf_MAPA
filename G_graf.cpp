@@ -1,6 +1,7 @@
 #include "G_graf.h"
 
 graf::graf() {
+  size_TAB_sasiedztwa = 0;
   lista_miast = new lista<miasto>;
   lista_polaczen = new lista<polaczenia>;
 
@@ -11,6 +12,13 @@ graf::graf() {
 graf::~graf() {
   delete lista_miast;
   delete lista_polaczen;
+  
+  for(unsigned int i = 0; i < size_TAB_sasiedztwa; ++i) {
+    delete tablica_sasiedztwa[i];
+  }
+  /* Listy wskaźników z tablica_sasiedztwa -> 
+     wskazują na już usunięte lista_polaczen */
+  
   delete[] tablica_sasiedztwa;
   delete[] tablica_indeksow_miast;
   lista_miast = nullptr;
@@ -67,25 +75,76 @@ void graf::add_ARRRAY_ptrs() {
   node<miasto>* miasto_ptr = lista_miast->get_head();       /* ptr -> head */
   node<polaczenia>* polaczenia_ptr = lista_polaczen->get_head();
   indeks_map.clear(); /* Czyszczenie mapowania tablicy wskaźników */
+  /* */ unsigned int ind;
   
-  /* Jeżeli tablice już istnieją, to robimy nowe, usuwając stare */
+  /* Jeżeli tablice już istnieją, to usuwa stare    */
+  /* USUWA tablice wskaźników na node'y typu miasto */
   if(tablica_indeksow_miast != nullptr) { delete[] tablica_indeksow_miast;}
-  if(tablica_sasiedztwa != nullptr) { delete[] tablica_sasiedztwa;}
-  
-  tablica_indeksow_miast = new node<miasto>*[lista_miast->get_nodeNumber()];
-  tablica_sasiedztwa = new node<polaczenia>*[lista_polaczen->get_nodeNumber()];
+  if(tablica_sasiedztwa != nullptr) { 
+    /* USUWA listy wskaźników na node'y typu połączenia */
+    for(unsigned int i = 0; i < size_TAB_sasiedztwa; ++i) 
+      { delete tablica_sasiedztwa[i]; }
+    /* USUWA tablice wskaźników na listy */
+    delete[] tablica_sasiedztwa;
+  }
+  size_TAB_sasiedztwa = lista_miast->get_nodeNumber();
 
+  /* TWORZY tablice wskaźników na node'y typu miasto */
+  tablica_indeksow_miast = new node<miasto>* [size_TAB_sasiedztwa];
+  /* TWORZY tablice wskaźników na listy */
+  tablica_sasiedztwa = new lista<node<polaczenia>*>* [size_TAB_sasiedztwa];
+  /* TWORZY listy wskaźników na node'y typu połączenia */
+  for(unsigned int i = 0; i < size_TAB_sasiedztwa; ++i)
+    { tablica_sasiedztwa[i] = new lista<node<polaczenia>*>; }
+  
   for (int i=0; miasto_ptr != nullptr; ++i) {
     tablica_indeksow_miast[i] = miasto_ptr;
     indeks_map[ lista_miast->get_elem(miasto_ptr).id ] = i; /*[5.]*/
     miasto_ptr = lista_miast->get_next(miasto_ptr);
   }
 
-  for (int i=0; polaczenia_ptr != nullptr; ++i) {
-    tablica_sasiedztwa[i] = polaczenia_ptr;
+  for (int i=0; i < lista_miast->get_nodeNumber(); ++i) {
+    tablica_sasiedztwa[i] = nullptr;
+  }
+
+  /* Ta pętla porusza się na orginalnej liście (lista_polaczen) */
+  while (polaczenia_ptr != nullptr) {
+    ind = indeks_map[ lista_polaczen->get_elem(polaczenia_ptr).city_1 ];
+    if (tablica_sasiedztwa[ind] == nullptr) throw std::runtime_error ("xx");
+    tablica_sasiedztwa[ind]->addFront(polaczenia_ptr);
+
+    ind = indeks_map[ lista_polaczen->get_elem(polaczenia_ptr).city_2 ];
+    tablica_sasiedztwa[ind]->addFront(polaczenia_ptr);
+    
     polaczenia_ptr = lista_polaczen->get_next(polaczenia_ptr);
   }
 
+  
+  // polaczenia tmp2;
+  // for (int i=0; i < lista_miast->get_nodeNumber(); ++i) {
+  //   if (tablica_sasiedztwa[i] == nullptr) cout << i << ". nullptr" << endl;
+  //   else {
+  //     tmp2 = lista_polaczen->get_elem(tablica_sasiedztwa[i]);
+  //     cout
+  //       << setw(3) << i << ". "
+  //     << endl; /* setw() [4.] */
+  //     pol_ptr = tablica_sasiedztwa[i];
+  //     while (pol_ptr != nullptr) {
+  //       tmp2 = lista_polaczen->get_elem(pol_ptr);
+  //       cout
+  //         << "   |"
+  //         << " city_1: " << left << setw(20) << tmp2.city_1
+  //         << " city_2: " << left << setw(20) << tmp2.city_2
+  //         << " road_name: " << left << setw(6) << tmp2.road_name
+  //         << " road_type: " << left << setw(3) << tmp2.road_type
+  //         << " distance: " << left << setw(5) << tmp2.distance
+  //       << endl; /* setw() [4.] */
+  //       pol_ptr = lista_polaczen->get_elem(pol_ptr).next_pol;
+  //     }    
+  //   }
+  // }
+
+  
   // cout 
   //   << lista_miast->get_elem( tablica_indeksow_miast[
   //     indeks_map["AleksandrowKujawski"]
@@ -228,7 +287,7 @@ void graf::test() {
 /* DEBUG display array - polaczenia */
     // polaczenia tmp2;
     // for(int i = 0; i < lista_polaczen->get_nodeNumber(); ++i) {
-    //   tmp2 = lista_polaczen->get_elem(tablica_sasiedztwa[i]);
+    //   tmp2 = lista_polaczen->get_elem(tablica_polaczen[i]);
     //   std::cout 
     //     << " city_1: " << left << setw(20) << tmp2.city_1
     //     << " city_2: " << left << setw(20) << tmp2.city_2

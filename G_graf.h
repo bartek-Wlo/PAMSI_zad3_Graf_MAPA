@@ -13,7 +13,19 @@ private:
   lista<miasto>* lista_miast = nullptr;
   lista<polaczenia>* lista_polaczen = nullptr;
   node<miasto>** tablica_indeksow_miast = nullptr;
-  node<polaczenia>** tablica_sasiedztwa = nullptr;
+  //node<polaczenia>** tablica_sasiedztwa = nullptr;
+  lista< node<polaczenia>* >** tablica_sasiedztwa = nullptr;
+  /* tablica_sasiedztwa -> TABLICA wskaźników -> na listy wskaźników ->
+     na listy typu lista<polaczenia> (lista_polaczen)
+     [•][•][•][•][•][•][•][•]
+      ↓  ↓  ↓  ↓  ↓  ↓  ↓  ↓   lista_polaczen
+      ■  ■  ■  ■  ■  ■  ■  ■ ----→ ■
+      ↓  ↓ null↓  ↓ null↓  ↓       ↓
+      ■  ■     ■  ■   null ■ ----→ ■
+   null null null null     ↓       ↓
+                           ■ ----→ ■ 
+  */
+  unsigned int size_TAB_sasiedztwa;
   string file_name;
   json data_json;
   map<string, int> indeks_map;
