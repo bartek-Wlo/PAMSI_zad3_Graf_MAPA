@@ -1,5 +1,6 @@
 #ifndef G_STRUCKT_H
 #define G_STRUCKT_H
+#include "G_lista.h"
 #include <string>
 
 struct miasto {
@@ -15,6 +16,7 @@ struct polaczenia{
   std::string road_name;
   std::string road_type;
   double distance;
+  node<polaczenia>* next_pol = nullptr;
 };
 
 #endif

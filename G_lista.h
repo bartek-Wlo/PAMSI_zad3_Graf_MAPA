@@ -38,15 +38,12 @@ public:
   int get_nodeNumber() const {return node_number;}
   const E& get_elem(node<E>* ptr) const {return ptr->elem;}
   node<E>* get_head() const {return head;}
-  node<E>* get_next(node<E>* ptr) const {return ptr->next;};
+  node<E>* get_next(node<E>* ptr) const;
 
 private:
   node<E> *head;
   unsigned int node_number;
 };
-#endif
-
-
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/  Definicje funkcji  \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
@@ -89,3 +86,15 @@ void lista<E>::removeFront() {
   delete old;
   --node_number;
 }
+
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+template <typename E>
+node<E>* lista<E>::get_next(node<E>* ptr) const {
+  if (empty()) {
+    throw std::out_of_range
+      ("Moving in empty list.\n           G_lista_def.h -> get_next(node<E>*)");
+  }
+  return ptr->next;
+};
+
+#endif

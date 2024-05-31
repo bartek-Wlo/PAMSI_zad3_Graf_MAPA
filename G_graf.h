@@ -2,12 +2,11 @@
 #define G_GRAF_H
 
 #include "G_struckt.h"
-#include "G_lista.h"
+//#include "G_lista.h"
 #include "json.hpp" /* [1.] */
 #include <fstream>
+#include <map> /* [5.] */
 using json = nlohmann::json;
-
-void test();
 
 class graf {
 private:
@@ -17,14 +16,19 @@ private:
   node<polaczenia>** tablica_sasiedztwa = nullptr;
   string file_name;
   json data_json;
+  map<string, int> indeks_map;
 
   void open();
 
 public:
+  void test(); /* <-- USUNĄĆ */
   graf();
   ~graf();
   void load();
   void add_ARRRAY_ptrs();
+
+  void endVertices(node<miasto>** c1, node<miasto>** c2, node<polaczenia>* road);
+  node<miasto>* opposite(node<miasto>* c1, node<polaczenia>* road) const;
 };
 
 #endif
@@ -34,5 +38,6 @@ public:
 2. https://cpp0x.pl/kursy/Kurs-C++/Dodatkowe-materialy/Obsluga-plikow/305
 3. https://learn.microsoft.com/pl-pl/cpp/cpp/try-throw-and-catch-statements-cpp?view=msvc-170
 4. https://cpp0x.pl/forum/temat/?id=11057
+5. https://en.cppreference.com/w/cpp/container/map
 
 */
