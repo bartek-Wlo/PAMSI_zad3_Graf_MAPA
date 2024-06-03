@@ -2,12 +2,11 @@
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/ KONSTRUKTOR \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
-graf::graf() {
-  size_TAB_sasiedztwa = 0;
+graf::graf() : size_TAB_sasiedztwa(0) {
   lista_miast = new lista<miasto>;
   lista_polaczen = new lista<polaczenia>;
 
-  file_name = "lubuskie.json";
+  file_name = "json/lubuskie.json";
 
 }
 
@@ -258,6 +257,13 @@ node<miasto>* graf::opposite(node<miasto>* c1, node<polaczenia>* road) const {
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/ areAdjacent \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 bool graf::areAdjacent(node<miasto>* c1, node<miasto>* c2) {
+  if (c1 == nullptr || c2 == nullptr) {
+    throw std::invalid_argument ("node<miasto>* == nullptr\n           G_graf.cpp -> areAdjacent(node<miasto>*,node<miasto>*)");
+  }
+  if (lista_miast->empty() || lista_polaczen->empty()) {
+    throw std::invalid_argument ("List.empty() == TRUE\n           G_graf.cpp -> areAdjacent(node<miasto>*,node<miasto>*)");
+  }
+  
   int inde = indeks_map [ lista_miast->get_elem(c1).id ];
   polaczenia str_pol;
   node<node<polaczenia>*>* ptr = tablica_sasiedztwa [inde] -> get_head();
