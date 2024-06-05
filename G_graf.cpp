@@ -137,17 +137,45 @@ void graf::add_ARRRAY_ptrs() {
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/   GETTERS   \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 
-node<miasto>* graf::get_city_wsk_by_id(string id) const {
+node<miasto>* graf::get_city_wsk_by_id(const string id) const {
   try {
     return tablica_indeksow_miast[indeks_map.at(id)];
   } catch (const std::exception& e) {
     cerr 
       << "Exception: " << e.what() << endl
-      << "     type: "<< typeid(e).name() << endl
+      << "     type: " << typeid(e).name() << endl
       << "      fun: G_graf.cpp -> node<miasto>* get_city_wsk_by_id(string)"
-      << endl;
+      << endl
+      << " Wrong ID: " << id << endl;
     return nullptr;
   }
+}
+
+// node<miasto>* graf::get_city_wsk_by_id(const unsigned int ind) const {
+//   if (tablica_indeksow_miast == nullptr) {
+//     throw std::invalid_argument ("tablica_indeksow_miast == nullptr\n           G_graf.cpp -> get_city_wsk_by_id(const unsigned int)");
+//   }
+//   if (ind >= size_TAB_sasiedztwa) throw std::invalid_argument ("const unsigned int < size_TAB_sasiedztwa\n           G_graf.cpp -> get_city_wsk_by_id(const unsigned int)");
+//   return tablica_indeksow_miast[ind];
+// }
+
+
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+unsigned int graf::get_ind(node<miasto>* ptr) const {
+  if (ptr == nullptr) throw std::invalid_argument ("node<miasto>* == nullptr\n           G_graf.cpp -> get_ind(node<miasto>*)");
+  return indeks_map.at( lista_miast->get_elem(ptr).id );
+}
+
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+polaczenia graf::get_str_polaczenia(node<polaczenia>* p) const {
+  if (p == nullptr) throw std::invalid_argument ("node<miasto>* == nullptr\n           G_graf.cpp -> get_str_polaczenia(node<miasto>*)");
+  return lista_polaczen->get_elem(p);
+}
+
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+miasto graf::get_str_miasto(node<miasto>* m) const {
+  if (m == nullptr) throw std::invalid_argument ("node<miasto>* == nullptr\n           G_graf.cpp -> get_str_polaczenia(node<miasto>*)");
+  return lista_miast->get_elem(m);
 }
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
@@ -178,6 +206,8 @@ node<polaczenia>* graf::get_road(node<miasto>* c1, node<miasto>* c2) const {
   throw std::logic_error  ("There is no road connecting both cities\n           G_graf.cpp -> get_road(node<miasto>*,node<miasto>*)");
 }
 
+
+
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\ curve  distance /‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
@@ -186,7 +216,7 @@ node<polaczenia>* graf::get_road(node<miasto>* c1, node<miasto>* c2) const {
 /*                           Haversine  formula:                           */
 /* d = 2R * asin{ √[ sin²((φ1-φ2)/2) + cosφ1 * cosφ2 * sin²((λ1-λ2)/2) ] } */
 
-double graf::curve_distance(node<miasto>* c1, node<miasto>* c2) {
+double graf::curve_distance(const node<miasto>* c1, const node<miasto>* c2) const {
   static const int R2 = 2*6371; /* [km] */
   double lat1 = (lista_miast->get_elem(c1).latitude ) * (M_PI / 180.0);
   double lat2 = (lista_miast->get_elem(c2).latitude ) * (M_PI / 180.0);
@@ -207,17 +237,17 @@ double graf::curve_distance(node<miasto>* c1, node<miasto>* c2) {
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/ endVertices \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 
-void graf::endVertices(node<miasto>** c1, 
-                       node<miasto>** c2, node<polaczenia>* road) {
+void graf::endVertices(node<miasto>** c1, node<miasto>** c2,
+                       const node<polaczenia>* road) const {
   if (road == nullptr) {
     throw std::invalid_argument("node<polaczenia>* road == nullptr \n           G_graf.cpp -> endVertices(node<miasto>** c1, node<miasto>** c2, node<polaczenia>* road)");
   } 
   
   *c1 = tablica_indeksow_miast [
-    indeks_map[ lista_polaczen->get_elem(road).city_1 ] 
+    indeks_map.at( lista_polaczen->get_elem(road).city_1 ) 
   ];
   *c2 = tablica_indeksow_miast [
-    indeks_map[ lista_polaczen->get_elem(road).city_2 ] 
+    indeks_map.at( lista_polaczen->get_elem(road).city_2 )
   ];
 }
 
@@ -225,7 +255,7 @@ void graf::endVertices(node<miasto>** c1,
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/  opposite   \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 
-node<miasto>* graf::opposite(node<miasto>* c1, node<polaczenia>* road) const {
+node<miasto>* graf::opposite(const node<miasto>* c1, const node<polaczenia>* road) const {
   if (road == nullptr) {
     throw std::invalid_argument("node<polaczenia>* road == nullptr \n           G_graf.cpp -> opposite(node<miasto>* c1, node<polaczenia>* road)");
   }
@@ -256,7 +286,7 @@ node<miasto>* graf::opposite(node<miasto>* c1, node<polaczenia>* road) const {
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/ areAdjacent \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
-bool graf::areAdjacent(node<miasto>* c1, node<miasto>* c2) {
+bool graf::areAdjacent(const node<miasto>* c1, const node<miasto>* c2) const {
   if (c1 == nullptr || c2 == nullptr) {
     throw std::invalid_argument ("node<miasto>* == nullptr\n           G_graf.cpp -> areAdjacent(node<miasto>*,node<miasto>*)");
   }
@@ -264,7 +294,7 @@ bool graf::areAdjacent(node<miasto>* c1, node<miasto>* c2) {
     throw std::invalid_argument ("List.empty() == TRUE\n           G_graf.cpp -> areAdjacent(node<miasto>*,node<miasto>*)");
   }
   
-  int inde = indeks_map [ lista_miast->get_elem(c1).id ];
+  int inde = indeks_map.at( lista_miast->get_elem(c1).id );
   polaczenia str_pol;
   node<node<polaczenia>*>* ptr = tablica_sasiedztwa [inde] -> get_head();
   while (ptr != nullptr) {  
@@ -287,7 +317,7 @@ bool graf::areAdjacent(node<miasto>* c1, node<miasto>* c2) {
 void graf::test() {
   miasto tmp;
   node<miasto>* A1 = get_city_wsk_by_id("Bogatynia");
-  node<miasto>* A2 = get_city_wsk_by_id("Sejny");
+  node<miasto>* A2 = get_city_wsk_by_id("Zgorzelec");
   node<polaczenia>* D1 = nullptr;
 
   cout << "curve_distance: " << curve_distance(A1, A2) << endl;
@@ -299,29 +329,82 @@ void graf::test() {
     D1 = get_road(A1, A2);
   }
   std::cout 
-    << " city_1: " << left << setw(20) << lista_polaczen->get_elem(D1).city_1
-    << " city_2: " << left << setw(20) << lista_polaczen->get_elem(D1).city_2
-    << " road_name: " <<left<<setw(20) << lista_polaczen->get_elem(D1).road_name
+    << " city_1: " << left << setw(20) << get_str_polaczenia(D1).city_1
+    << " city_2: " << left << setw(20) << get_str_polaczenia(D1).city_2
+    << " road_name: " <<left<<setw(20) << get_str_polaczenia(D1).road_name
     << std::endl << "                             "
-    << " road_type: " <<left<<setw(5) << lista_polaczen->get_elem(D1).road_type
-    << " distance: " <<left<<setw(10) << lista_polaczen->get_elem(D1).distance
+    << " road_type: " <<left<<setw(5) << get_str_polaczenia(D1).road_type
+    << " distance: " <<left<<setw(10) << get_str_polaczenia(D1).distance
     << std::endl; /* setw() [4.] */
   
-  tmp = lista_miast->get_elem(A1);
+  //tmp = lista_miast->get_elem(A1);
   std::cout 
-    << " id: " << left << setw(20) << tmp.id
-    << " lati: " << left << setw(10) << tmp.latitude
-    << " long: " << left << setw(10) << tmp.longitude
-    << " name: " << left << setw(20) << tmp.name
+    << " IND: " << left << setw(5) << get_ind(A1)
+    << " id: " << left << setw(20) << get_str_miasto(A1).id
+    << " lati: " << left << setw(10) << get_str_miasto(A1).latitude
+    << " long: " << left << setw(10) << get_str_miasto(A1).longitude
+    << " name: " << left << setw(20) << get_str_miasto(A1).name
     << std::endl; /* setw() [4.] */
   
   tmp = lista_miast->get_elem(A2);
   std::cout 
+    << " IND: " << left << setw(5) << get_ind(A2)
     << " id: " << left << setw(20) << tmp.id
     << " lati: " << left << setw(10) << tmp.latitude
     << " long: " << left << setw(10) << tmp.longitude
     << " name: " << left << setw(20) << tmp.name
     << std::endl; /* setw() [4.] */
+}
+
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\  Astar  /‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+                         /* Jedziemy od city 1. do  city 2. */
+void graf::algorytm_Astar(const string& city_1, const string& city_2) { 
+  /* Lista Odwiedzonych Miast (zapisuje inteksy tablicy)*/
+  lista<unsigned int>* LOM = new lista<unsigned int>;
+  lista<Fx>* LFX = new lista<Fx>;
+  node< node<polaczenia>* >* ptr_LOM = nullptr;
+  node<polaczenia>* ptr_conect = nullptr;
+  const node<miasto>* DOCELOWE = get_city_wsk_by_id(city_2);
+  unsigned int ind = indeks_map.at(city_1);
+  LOM->addFront(ind);
+
+  while(  areAdjacent( tablica_indeksow_miast[LOM->front()], DOCELOWE )  ) {
+    ptr_LOM = tablica_sasiedztwa[LOM->front()] -> get_head();
+    
+    while( ptr_LOM != nullptr ) {
+      ptr_conect = tablica_sasiedztwa[LOM->front()] -> get_elem(ptr_LOM);
+      LFX->addFront({
+        get_str_polaczenia(ptr_conect).distance +                        /* g(X) */
+        curve_distance( tablica_indeksow_miast[LOM->front()], DOCELOWE), /* h(X) */
+        ptr_conect
+      });
+      ptr_LOM = tablica_sasiedztwa[LOM->front()] -> get_next(ptr_LOM);
+    }
+
+    while() {
+      
+    }
+    szuka: MIN( lista<f_od_X>.int ) 
+    PO zanalezieniu zwraca wskaźnik na połączenie wsk_na_polaczenie
+    Szuka miasta po drugiej stronie połączenia wsk_na_polaczenie
+    LOM->addFront( opposite(wsk_na_polaczenie) );
+
+
+    ind = get_ind( LOM->front() );
+  }
+  Wyświetla liste LOM
+  Iteruje po kolejych elementach lom -> LOM_n i LOM_n+1 i korzysta z metody:
+    get_road albo areAdjacent (raczej get_road) i zczytuje dane  które to zwraca
+
+
+  delete LOM; 
+  delete LFX;
+  LOM = nullptr;
+  LFX = nullptr;
 }
 
 

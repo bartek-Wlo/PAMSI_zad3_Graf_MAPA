@@ -36,7 +36,7 @@ public:
   void removeFront();              // Usuń pierwszy element listy.
 
   int get_nodeNumber() const {return node_number;}
-  const E& get_elem(node<E>* ptr) const;
+  const E& get_elem(const node<E>* ptr) const;
   node<E>* get_head() const {return head;}
   node<E>* get_next(node<E>* ptr) const;
 
@@ -89,7 +89,7 @@ void lista<E>::removeFront() {
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 template <typename E>
-const E& lista<E>::get_elem(node<E>* ptr) const {
+const E& lista<E>::get_elem(const node<E>* ptr) const {
   if (empty()) {
     throw std::out_of_range
       ("Returning in empty list.\n           G_lista.h -> get_elem(node<E>*)");

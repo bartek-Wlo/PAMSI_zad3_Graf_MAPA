@@ -18,4 +18,9 @@ struct polaczenia{
   double distance;
 };
 
+struct Fx {
+  double Gx_Hx;
+  node<polaczenia>* wsk_na_polaczenie;
+};
+
 #endif

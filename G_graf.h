@@ -38,17 +38,25 @@ public:
   ~graf();
   void load();
   void add_ARRRAY_ptrs();
-  node<miasto>* get_city_wsk_by_id(string id) const;
+  node<miasto>* get_city_wsk_by_id(const string id) const;
+  // node<miasto>* get_city_wsk_by_id(const unsigned int ind) const;
+  unsigned int get_ind(node<miasto>* ptr) const;
+  polaczenia get_str_polaczenia(node<polaczenia>* p) const;
+  miasto get_str_miasto(node<miasto>* m) const;
   node<polaczenia>* get_road(node<miasto>* c1, node<miasto>* c2) const;
 
+
+
   /* Zwraca odległość między miastami w linii krzywej (ziemia jest kulą) */
-  double curve_distance(node<miasto>* c1, node<miasto>* c2);
+  double curve_distance(const node<miasto>* c1, const node<miasto>* c2) const;
   /* Ustawia c1, c2 na wierzchołki podanej krawędzi road */
-  void endVertices(node<miasto>** c1, node<miasto>** c2, node<polaczenia>* road);
+  void endVertices(node<miasto>** c1, node<miasto>** c2, const node<polaczenia>* road) const;
   /* Zwraca przeciw legły wierzchołek względem podanej krawędzi road */
-  node<miasto>* opposite(node<miasto>* c1, node<polaczenia>* road) const;
+  node<miasto>* opposite(const node<miasto>* c1, const node<polaczenia>* road) const;
   /* Zwraca czy wierzchołki mają połączenie */
-  bool areAdjacent(node<miasto>* c1, node<miasto>* c2);
+  bool areAdjacent(const node<miasto>* c1, const node<miasto>* c2) const;
+  /* A* Astar */
+  void algorytm_Astar(const string& city_1, const string& city_2);
 };
 
 #endif

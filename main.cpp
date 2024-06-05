@@ -19,3 +19,6 @@ int main() {
   return 0;
 }
 
+/* Przebudować: lista< node<polaczenia>* >** tablica_sasiedztwa = nullptr;
+   na         : lista< polaczenia* >** tablica_sasiedztwa = nullptr;  */
+
