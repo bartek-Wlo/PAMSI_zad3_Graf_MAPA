@@ -33,10 +33,11 @@ private:
 
 public:
   void test(); /* <-- USUNĄĆ */
-  void X(string s ) {file_name = s;}
+  void set_file_name(string s ) {file_name = s;}
   graf();
   ~graf();
   void load();
+  void load_few();
   void add_ARRRAY_ptrs();
   node<miasto>* get_city_wsk_by_id(const string id) const;
   // node<miasto>* get_city_wsk_by_id(const unsigned int ind) const;

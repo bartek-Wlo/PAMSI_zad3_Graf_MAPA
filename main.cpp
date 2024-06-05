@@ -1,17 +1,11 @@
 #include <iostream>
-#include "G_Algorytm_.h"
+#include "G_graf.h"
 
 int main() {
   graf G;
-  try {G.load();}
-  catch (json::parse_error& e) {cerr<<"Parse error: "<<e.what()<<endl;} /*[3.]*/
-  catch (const std::exception& e) {cerr<<"Exception: "<<e.what()<<endl;}
-  G.X("json/dolnoslaski.json"); G.load();
-  G.X("json/kujawsko-pomorskie.json"); G.load();
-  G.X("json/podlaskie-wm-poprawione.json"); G.load();
+  G.load_few();
   
   G.add_ARRRAY_ptrs();
-  
   
   G.test();
 
@@ -20,5 +14,9 @@ int main() {
 }
 
 /* Przebudować: lista< node<polaczenia>* >** tablica_sasiedztwa = nullptr;
-   na         : lista< polaczenia* >** tablica_sasiedztwa = nullptr;  */
+   na         : lista< polaczenia* >** tablica_sasiedztwa = nullptr;  
+   
+   
+   
+   2. Dodać zabezpieczenie by algorytm nie chodził w koło po tych samych miastach */
 
