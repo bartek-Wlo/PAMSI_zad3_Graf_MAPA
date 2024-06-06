@@ -18,5 +18,6 @@ int main() {
    
    
    
-   2. Dodać zabezpieczenie by algorytm nie chodził w koło po tych samych miastach */
+   2. Dodać zabezpieczenie by algorytm nie chodził w koło po tych samych miastach 
+   czyli nie dodawać połączaeń do LFX do miats z których właśnie przyszliśmy */
 

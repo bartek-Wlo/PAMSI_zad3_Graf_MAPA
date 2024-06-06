@@ -53,6 +53,8 @@ public:
   /* Ustawia c1, c2 na wierzchołki podanej krawędzi road */
   void endVertices(node<miasto>** c1, node<miasto>** c2, const node<polaczenia>* road) const;
   /* Zwraca przeciw legły wierzchołek względem podanej krawędzi road */
+  bool isTop(const node<miasto>* c1, const node<polaczenia>* road) const;
+  /* Zwraca przeciw legły wierzchołek względem podanej krawędzi road */
   node<miasto>* opposite(const node<miasto>* c1, const node<polaczenia>* road) const;
   /* Zwraca czy wierzchołki mają połączenie */
   bool areAdjacent(const node<miasto>* c1, const node<miasto>* c2) const;
