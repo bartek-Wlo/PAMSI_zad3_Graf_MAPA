@@ -85,7 +85,8 @@ void graf::load_few() {
   //   "json/W_slaskie.json"
   // };
   const int number_of_files = 1;
-  string cities[number_of_files] = {"json/Z_test_V1.json"};
+  // string cities[number_of_files] = {"json/Z_test_V1.json"};
+    string cities[number_of_files] = {"json/all_W_CONNECTIONS.json"};
   
   for (int i = 0; i < number_of_files; ++i) {
     set_file_name(cities[i]);
@@ -229,7 +230,7 @@ node<polaczenia>* graf::get_road(node<miasto>* c1, node<miasto>* c2) const {
     throw std::invalid_argument ("List.empty() == TRUE\n           G_graf.cpp -> get_road(node<miasto>*,node<miasto>*)");
   }
 
-  int inde = indeks_map.at(lista_miast->get_elem(c1).id);
+  unsigned int inde = indeks_map.at(lista_miast->get_elem(c1).id);
   polaczenia str_pol;
   node<node<polaczenia>*>* ptr = tablica_sasiedztwa[inde] -> get_head();
   
@@ -377,7 +378,7 @@ bool graf::areAdjacent(const node<miasto>* c1, const node<miasto>* c2) const {
     throw std::invalid_argument ("List.empty() == TRUE\n           G_graf.cpp -> areAdjacent(node<miasto>*,node<miasto>*)");
   }
   
-  int inde = indeks_map.at( lista_miast->get_elem(c1).id );
+  unsigned int inde = indeks_map.at( lista_miast->get_elem(c1).id );
   polaczenia str_pol;
   node<node<polaczenia>*>* ptr = tablica_sasiedztwa [inde] -> get_head();
   while (ptr != nullptr) {  
@@ -400,7 +401,9 @@ bool graf::areAdjacent(const node<miasto>* c1, const node<miasto>* c2) const {
 void graf::test() {
   miasto tmp;
   // string city_1 = "GorzowWielkopolski", city_2 = "Glubczyce";
-  string city_1 = "a", city_2 = "c";
+  // string city_1 = "GorzowWielkopolski", city_2 = "GorzowWielkopolski";
+  // string city_1 = "a", city_2 = "c";
+  string city_1 = "Bogatynia", city_2 = "Sejny";
   node<miasto>* A1 = get_city_wsk_by_id(city_1);
   node<miasto>* A2 = get_city_wsk_by_id(city_2);
   // curve_distance(A1, A2); return;

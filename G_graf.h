@@ -27,7 +27,7 @@ private:
   unsigned int size_TAB_sasiedztwa;
   string file_name;
   json data_json;
-  map<string, int> indeks_map;
+  map<string, unsigned int> indeks_map;
 
   void open();
 

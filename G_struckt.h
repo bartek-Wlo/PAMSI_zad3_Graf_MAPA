@@ -18,9 +18,16 @@ struct polaczenia{
   double distance;
 };
 
+struct SOM { /* Struktura do listy Odwiedzonych Miast */
+  unsigned int index;
+  node<SOM>* prev;
+};
+
 struct Fx {
   double Gx_Hx;
   node<polaczenia>* wsk_na_polaczenie;
 };
+
+
 
 #endif
