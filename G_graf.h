@@ -30,6 +30,7 @@ private:
   map<string, unsigned int> indeks_map;
 
   void open();
+  void pasek_postepu_std_err_display();
 
 public:
   void test(); /* <-- USUNĄĆ */
@@ -43,6 +44,8 @@ public:
   // node<miasto>* get_city_wsk_by_id(const unsigned int ind) const;
   unsigned int get_ind(node<miasto>* ptr) const;
   polaczenia get_str_polaczenia(node<polaczenia>* p) const;
+  polaczenia get_str_polaczenia(const node< node<polaczenia>* >* p,
+                                const unsigned int i) const;
   miasto get_str_miasto(node<miasto>* m) const;
   node<polaczenia>* get_road(node<miasto>* c1, node<miasto>* c2) const;
 
@@ -60,6 +63,7 @@ public:
   bool areAdjacent(const node<miasto>* c1, const node<miasto>* c2) const;
   /* A* Astar */
   void algorytm_Astar(const string& city_1, const string& city_2);
+  void algorytm_Dijkstra(const string& city_1, const string& city_2);
 };
 
 #endif
@@ -70,5 +74,6 @@ public:
 3. https://learn.microsoft.com/pl-pl/cpp/cpp/try-throw-and-catch-statements-cpp?view=msvc-170
 4. https://cpp0x.pl/forum/temat/?id=11057
 5. https://en.cppreference.com/w/cpp/container/map
+6. https://stackoverflow.com/questions/8690567/setting-an-int-to-infinity-in-c
 
 */

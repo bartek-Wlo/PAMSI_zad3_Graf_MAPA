@@ -86,7 +86,7 @@ void graf::load_few() {
   // };
   const int number_of_files = 1;
   // string cities[number_of_files] = {"json/Z_test_V1.json"};
-    string cities[number_of_files] = {"json/all_W_CONNECTIONS.json"};
+  string cities[number_of_files] = {"json/all_W_CONNECTIONS.json"};
   
   for (int i = 0; i < number_of_files; ++i) {
     set_file_name(cities[i]);
@@ -213,6 +213,14 @@ unsigned int graf::get_ind(node<miasto>* ptr) const {
 polaczenia graf::get_str_polaczenia(node<polaczenia>* p) const {
   if (p == nullptr) throw std::invalid_argument ("node<miasto>* == nullptr\n           G_graf.cpp -> get_str_polaczenia(node<miasto>*)");
   return lista_polaczen->get_elem(p);
+}
+
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+polaczenia graf::get_str_polaczenia(const node< node<polaczenia>* >* p,
+                                    const unsigned int i) const {
+  if (p == nullptr) throw std::invalid_argument ("node<miasto>* == nullptr\n           G_graf.cpp -> get_str_polaczenia(const node< node<polaczenia>* >*,const unsigned int)");
+  if (i > lista_miast->get_nodeNumber()) throw std::invalid_argument("index > size of lista_miast\n           G_graf.cpp -> get_str_polaczenia(const node< node<polaczenia>* >*,const unsigned int)");
+  return lista_polaczen->get_elem( tablica_sasiedztwa[i]->get_elem(p) );
 }
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
@@ -403,7 +411,7 @@ void graf::test() {
   // string city_1 = "GorzowWielkopolski", city_2 = "Glubczyce";
   // string city_1 = "GorzowWielkopolski", city_2 = "GorzowWielkopolski";
   // string city_1 = "a", city_2 = "c";
-  string city_1 = "Bogatynia", city_2 = "Sejny";
+  string city_1 = "Bogatynia", city_2 = "Warszawa";
   node<miasto>* A1 = get_city_wsk_by_id(city_1);
   node<miasto>* A2 = get_city_wsk_by_id(city_2);
   // curve_distance(A1, A2); return;
@@ -416,8 +424,11 @@ void graf::test() {
     cout << "A1 and A2 are adjacent" << endl;
     D1 = get_road(A1, A2);
   } else {
-    cout << "A STAR incoming!" << endl;
-    algorytm_Astar(city_1, city_2);
+    //cout << "A STAR incoming!" << endl;
+    //algorytm_Astar(city_1, city_2);
+    cout << "=========================================" << endl;
+    cout << "Dijkstra incoming!" << endl;
+    algorytm_Dijkstra(city_1, city_2);
     return;
   }
   std::cout 

@@ -52,7 +52,7 @@ void graf::algorytm_Astar(const string& city_1, const string& city_2) {
     /* while( iteruje po elementach tablica_sasiedztwa[LOM->front().index] )    */        // XXX
     /* while( iteruje po elemen tablica_sasiedztwa[LOM->get_elem(CCPL).index] ) */
     while( ptr_LOM != nullptr ) {
-      /* Wspomniana inicjalizacja ptr_conect za pomocą ptr_LOM                  */
+      /* Wspomniana inicjSalizacja ptr_conect za pomocą ptr_LOM                  */
       /* tab...[LOM->front().index] wsk do listy wszystkich połaczeń tego miasta*/
       /*    ptr_LOM    iterujący tab[front()] zwraca wsk na node listy połączeń */
       /* ptr_conect    dostaje wsk na str z danymi połaczenia z tym miastem     */
@@ -216,4 +216,5 @@ void graf::algorytm_Astar(const string& city_1, const string& city_2) {
   delete LFX;
   LOM = nullptr;
   LFX = nullptr;
+  return;
 }

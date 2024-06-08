@@ -36,7 +36,7 @@ public:
   void removeFront();              // Usuń pierwszy element listy.
   void removeInside(node<E> *ptr); // Usuń element na liście. ZŁOŻONOŚC O(n)
 
-  int get_nodeNumber() const {return node_number;}
+  unsigned int get_nodeNumber() const {return node_number;}
   const E& get_elem(const node<E>* ptr) const;
   node<E>* get_head() const {return head;}
   node<E>* get_next(node<E>* ptr) const;

@@ -28,6 +28,9 @@ struct Fx {
   node<polaczenia>* wsk_na_polaczenie;
 };
 
-
+// struct SQ {
+//   unsigned int index;
+//   double distance;
+// };
 
 #endif
