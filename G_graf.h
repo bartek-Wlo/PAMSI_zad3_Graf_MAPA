@@ -30,11 +30,10 @@ private:
   map<string, unsigned int> indeks_map;
 
   void open();
-  void pasek_postepu_std_err_display();
 
 public:
   void test(); /* <-- USUNĄĆ */
-  void set_file_name(string s ) {file_name = s;}
+void set_file_name(string s) {file_name = s;}
   graf();
   ~graf();
   void load();
@@ -50,7 +49,6 @@ public:
   node<polaczenia>* get_road(node<miasto>* c1, node<miasto>* c2) const;
 
 
-
   /* Zwraca odległość między miastami w linii krzywej (ziemia jest kulą) */
   double curve_distance(const node<miasto>* c1, const node<miasto>* c2) const;
   /* Ustawia c1, c2 na wierzchołki podanej krawędzi road */
@@ -63,7 +61,15 @@ public:
   bool areAdjacent(const node<miasto>* c1, const node<miasto>* c2) const;
   /* A* Astar */
   void algorytm_Astar(const string& city_1, const string& city_2);
+  /* Dijkstra */
   void algorytm_Dijkstra(const string& city_1, const string& city_2);
+
+private:
+/* A* Astar */
+/* Dijkstra */
+  void pasek_postepu_std_err_display();
+
+
 };
 
 #endif
@@ -76,4 +82,22 @@ public:
 5. https://en.cppreference.com/w/cpp/container/map
 6. https://stackoverflow.com/questions/8690567/setting-an-int-to-infinity-in-c
 
+*/
+
+/* Komentarz:                                         (Do struktury listy tablicy połaczeń)
+   lista< node<polaczenia>* >** tablica_sasiedztwa
+   Jest tablicą wskaźników  ->  listę wskaźników  ->  node listy typu lista<polaczenia>.
+
+   Co jest w zasadzie nie dokońca idealne, ponieważ powinny być:
+   tablicą wskaźników  ->  listę wskaźników  ->  elementy node'ów listy typu lista<polaczenia>.
+   inaczej (napisane to samo):
+   tablicą wskaźników  ->  listę wskaźników  ->  poszczególne struktury "polaczenia".
+   
+   To niedociągnięcie powoduje, że w całym programie, korzystając z tablica_sasiedztwa,
+     po odwołaniu się do konkretnej komórki tablicy dostajemy wskaźnik na całą listę
+     wszystkich połączeń jakiegoś miasta. 
+   Kiedy zaś wybieramy konkretny node tej listy, to jego elementem nie będzie wskaźnik
+     na strukturę zwierającą informacje o połączeniu, 
+     tylko wskaźnik na kolejnego noda, co ozacza że trzeba jeszcze raz wywołać funkjcę
+     zwracającą element.
 */

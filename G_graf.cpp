@@ -194,13 +194,16 @@ node<miasto>* graf::get_city_wsk_by_id(const string id) const {
   }
 }
 
-// node<miasto>* graf::get_city_wsk_by_id(const unsigned int ind) const {
-//   if (tablica_indeksow_miast == nullptr) {
-//     throw std::invalid_argument ("tablica_indeksow_miast == nullptr\n           G_graf.cpp -> get_city_wsk_by_id(const unsigned int)");
-//   }
-//   if (ind >= size_TAB_sasiedztwa) throw std::invalid_argument ("const unsigned int < size_TAB_sasiedztwa\n           G_graf.cpp -> get_city_wsk_by_id(const unsigned int)");
-//   return tablica_indeksow_miast[ind];
-// }
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/ 
+/* Nie używana funcja
+node<miasto>* graf::get_city_wsk_by_id(const unsigned int ind) const {
+  if (tablica_indeksow_miast == nullptr) {
+    throw std::invalid_argument ("tablica_indeksow_miast == nullptr\n           G_graf.cpp -> get_city_wsk_by_id(const unsigned int)");
+  }
+  if (ind >= size_TAB_sasiedztwa) throw std::invalid_argument ("const unsigned int < size_TAB_sasiedztwa\n           G_graf.cpp -> get_city_wsk_by_id(const unsigned int)");
+  return tablica_indeksow_miast[ind];
+}
+*/
 
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
@@ -408,10 +411,10 @@ bool graf::areAdjacent(const node<miasto>* c1, const node<miasto>* c2) const {
 
 void graf::test() {
   miasto tmp;
-  // string city_1 = "GorzowWielkopolski", city_2 = "Glubczyce";
+  string city_1 = "GorzowWielkopolski", city_2 = "Glubczyce";
   // string city_1 = "GorzowWielkopolski", city_2 = "GorzowWielkopolski";
   // string city_1 = "a", city_2 = "c";
-  string city_1 = "Bogatynia", city_2 = "Sejny";
+  // string city_1 = "Bogatynia", city_2 = "Sejny";
   node<miasto>* A1 = get_city_wsk_by_id(city_1);
   node<miasto>* A2 = get_city_wsk_by_id(city_2);
   // curve_distance(A1, A2); return;
@@ -424,10 +427,10 @@ void graf::test() {
     cout << "A1 and A2 are adjacent" << endl;
     D1 = get_road(A1, A2);
   } else {
-    //cout << "A STAR incoming!" << endl;
-    //algorytm_Astar(city_1, city_2);
-    cout << "=========================================" << endl;
-    cout << "Dijkstra incoming!" << endl;
+    cout << "_____________________________ A* _____________________________" << endl;
+    algorytm_Astar(city_1, city_2);
+    cout << endl;
+    cout << "___________________________Dijkstra___________________________" << endl;
     algorytm_Dijkstra(city_1, city_2);
     return;
   }

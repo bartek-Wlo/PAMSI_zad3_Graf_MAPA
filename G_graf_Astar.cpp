@@ -9,7 +9,6 @@
 void graf::algorytm_Astar(const string& city_1, const string& city_2) { 
   /* Lista Odwiedzonych Miast (zapisuje inteksy tablicy)                   */
   lista<SOM>* LOM = new lista<SOM>;
-  /* Wsk do iterowania w najnowszym elem list LOM po wszytkich połączeniach*/        // XXX
   /* Wsk do iterowania w aktualnym elem list LOM po wszytkich połączeniach */
   /* Aktualny elem jest wskazywany przez wsk CCPL                          */
   node< node<polaczenia>* >* ptr_LOM = nullptr;
@@ -44,27 +43,14 @@ void graf::algorytm_Astar(const string& city_1, const string& city_2) {
     )   ) {
     ptr_LOM = tablica_sasiedztwa[LOM->get_elem(CCPL).index] -> get_head();
 
-    cout 
-      << lista_miast->get_elem(tablica_indeksow_miast[LOM->get_elem(CCPL).index]).name
-      << "   first city in LOM: "
-      << lista_miast->get_elem(tablica_indeksow_miast[LOM->front().index]).name 
-      << endl;
-    /* while( iteruje po elementach tablica_sasiedztwa[LOM->front().index] )    */        // XXX
     /* while( iteruje po elemen tablica_sasiedztwa[LOM->get_elem(CCPL).index] ) */
     while( ptr_LOM != nullptr ) {
-      /* Wspomniana inicjSalizacja ptr_conect za pomocą ptr_LOM                  */
+      /* Wspomniana inicjSalizacja ptr_conect za pomocą ptr_LOM                 */
       /* tab...[LOM->front().index] wsk do listy wszystkich połaczeń tego miasta*/
       /*    ptr_LOM    iterujący tab[front()] zwraca wsk na node listy połączeń */
       /* ptr_conect    dostaje wsk na str z danymi połaczenia z tym miastem     */
       ptr_conect = tablica_sasiedztwa[LOM->get_elem(CCPL).index] -> get_elem(ptr_LOM);
       opposite_city = opposite(tablica_indeksow_miast[LOM->get_elem(CCPL).index], ptr_conect);
-          cout
-            << " długosc polączenia = "
-            << get_str_polaczenia(ptr_conect).distance
-            << "   curve distance = "
-            << curve_distance(opposite_city, DOCELOWE)
-            << "   " << lista_miast->get_elem(opposite_city).name
-            << endl;
       /* hort-circuit evaluation, NIE sprawdzać 2' war. jeżeli 1.==nullptr */
       if (LOM->get_elem(CCPL).prev == nullptr || opposite_city != 
       tablica_indeksow_miast[LOM->get_elem(LOM->get_elem(CCPL).prev).index])
@@ -86,42 +72,20 @@ void graf::algorytm_Astar(const string& city_1, const string& city_2) {
     FxMIN = LFX->front().Gx_Hx;
     /* while( iteruje po elementach LFX (lista F(x) ) Szuka F_{MIN}(x)     */
     while(ptr_LFX != nullptr) {
-      cout 
-        << " F(x)= "<< LFX->get_elem(ptr_LFX).Gx_Hx << " "
-        << " C1: " 
-        << lista_polaczen->get_elem(LFX->get_elem(ptr_LFX).wsk_na_polaczenie).city_1
-        << " C2: "
-        << lista_polaczen->get_elem(LFX->get_elem(ptr_LFX).wsk_na_polaczenie).city_2
-        << endl; 
       if (LFX->get_elem(ptr_LFX).Gx_Hx < FxMIN) {
         FxMIN = LFX->get_elem(ptr_LFX).Gx_Hx;
         LFX_MIN = ptr_LFX;
       }
       ptr_LFX = LFX->get_next(ptr_LFX);
     }
-    cout << endl;
 
 // While (wsk_na_polączeni NIE zawiera tablica_indeksow_miast[LOM->front().index] )
 // Czyli tak długo jak najnowsze miasto nie jest częścią najkrótszejego połączenia
 // USUSŃ najnowsze odwiedzone miasto remove front()
 // I usuń LFX tego miasta w pętli.
-    //while( isTop(tablica_indeksow_miast[LOM->front().index],  
     while( isTop(tablica_indeksow_miast[LOM->get_elem(CCPL).index],
            LFX->get_elem(LFX_MIN).wsk_na_polaczenie) == false ) {
-      // while (
-      //     // lista_miast->get_elem( tablica_indeksow_miast[LOM->front().index] ).id ==
-      //     // lista_polaczen->get_elem(LFX->front().wsk_na_polaczenie).city_1 ||
-      //     // lista_miast->get_elem( tablica_indeksow_miast[LOM->front().index] ).id ==
-      //     // lista_polaczen->get_elem(LFX->front().wsk_na_polaczenie).city_2
-      //     lista_miast->get_elem( tablica_indeksow_miast[LOM->get_elem(CCPL).index] ).id ==
-      //     lista_polaczen->get_elem(LFX->front().wsk_na_polaczenie).city_1 ||
-      //     lista_miast->get_elem( tablica_indeksow_miast[LOM->get_elem(CCPL).index] ).id ==
-      //     lista_polaczen->get_elem(LFX->front().wsk_na_polaczenie).city_2
-      //   ) {
-      //   LFX->removeFront();
-      // }
       CCPL = LOM->get_next(CCPL);
-      // LOM->removeFront();
     }
 
     LOM->addFront({  /* Dodaj do Listy Odwiedzonych Miast: {1, 2}          */
@@ -135,51 +99,10 @@ void graf::algorytm_Astar(const string& city_1, const string& city_2) {
       ), CCPL /* Dodaj do LOM node z 2: wsk na node z poprzednim miastem   */
     });
     CCPL = LOM->get_head();
-    
-    cout 
-      << " Dlugość między miastami F(x) = G(x) + H(x) = "
-      << LFX->get_elem(LFX_MIN).Gx_Hx
-      << "    city 1: "
-      << lista_polaczen->get_elem(LFX->get_elem(LFX_MIN).wsk_na_polaczenie).city_1
-      << "    city 2: "
-        << lista_polaczen->get_elem(LFX->get_elem(LFX_MIN).wsk_na_polaczenie).city_2
-      << endl;
     LFX->removeInside(LFX_MIN);
   }
 
   /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\ DEBUG DISPLAY /‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
-
-  display_ptr_LOM = LOM->get_head();
-  cout 
-    << "id: " << left << setw(20) << lista_miast->get_elem(DOCELOWE).id
-    << " lati: " << left << setw(10) << lista_miast->get_elem(DOCELOWE).latitude
-    << " long: " << left << setw(10) << lista_miast->get_elem(DOCELOWE).longitude
-    << " name: " << left << setw(20) << lista_miast->get_elem(DOCELOWE).name
-    << std::endl;
-  while (display_ptr_LOM != nullptr) {
-    cout 
-      << "id: " << left << setw(20) <<
-      lista_miast->get_elem(
-        tablica_indeksow_miast[LOM->get_elem(display_ptr_LOM).index]
-      ).id
-      << " lati: " << left << setw(10) <<
-      lista_miast->get_elem(
-        tablica_indeksow_miast[LOM->get_elem(display_ptr_LOM).index]
-      ).latitude
-      << " long: " << left << setw(10) <<
-      lista_miast->get_elem
-        (tablica_indeksow_miast[LOM->get_elem(display_ptr_LOM).index]
-      ).longitude
-      << " name: " << left << setw(20) <<
-      lista_miast->get_elem(
-        tablica_indeksow_miast[LOM->get_elem(display_ptr_LOM).index]
-      ).name
-      << std::endl;
-
-    display_ptr_LOM = LOM->get_next(display_ptr_LOM);
-  }
-
-  cout << endl;
 
   display_ptr_LOM = LOM->get_head();
   cout 

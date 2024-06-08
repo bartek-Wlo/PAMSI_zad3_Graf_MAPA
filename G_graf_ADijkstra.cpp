@@ -1,110 +1,97 @@
 #include "G_graf.h"
 
+/*_________________________________________________________________________*/
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/  Dijkstra   \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾*/
+/*                             Jedziemy od city 1. do  city 2.             */
 void graf::algorytm_Dijkstra(const string& city_1, const string& city_2) {
   const unsigned int liczba_miast = lista_miast->get_nodeNumber();
-  /* https://pl.wikipedia.org/wiki/Algorytm_Dijkstry */
+  
+  /* https://pl.wikipedia.org/wiki/Algorytm_Dijkstry                       */
   /* d -> odległości od źródła dla wszystkich wierzchołków grafu           */
   double* distance = new double[liczba_miast];
+  /* Czy miasto już zostało wpisane do listy Queue                         */
   bool* visited = new bool[liczba_miast];
-  bool city_2_visited = false;
+  /* Tablica indeksów na poprzednie miasto na drodzie do celu              */
   unsigned int* prev = new unsigned int[liczba_miast];
-  /* kolejks priorytetowa Q -> nieodwiedzone spotkane wierzchołki          */
+  /* kolejka priorytetowa Q -> Wierzchołki którym raz wyzaczano połaczenie */
   lista<unsigned int>* Queue = new lista<unsigned int>;
+
+  /* Wskaźnik na Queue do usuwania wierzchołków z wyzanczonymi połączeniami*/
   node<unsigned int>* delete_elem_Queue = nullptr;
+  /* Wskaźnik do listy połaczeń aktualnie rozpatrywanego miasta.           */
   node< node<polaczenia>* >* ptr_TSC = nullptr; /* Tab Sąsiedztwa Current  */
+  /* Wskaźnik do struktury z jednym połączeniem  aktualnego miasta         */
   node<polaczenia>* wsk_SPCC = nullptr;/* Struktura Połączenia Current City*/
+
+  /* Czy miasto docelowe, było już odwiedzone  (Wyznacano jego połączenia) */
+  bool city_2_visited = false;
+  /* Indeks aktualnie rozpatrywanego miasta.                               */
   unsigned int current = indeks_map.at(city_1);
+  /* 1. Ideks miasta po drugiej stronie połączenia                         */
+  /* 2. Ideks do iterowania po kolejce Queue i  wybrania kolejnego miasta  */
+  /* 3. Ideks do zapisywania prev, przy wświetlaniu trasy.                 */
   unsigned int city_index;
+  /* Dystans: trasa do tego miasta + połaczenie z następnym.               */
   double curr_distance;
 
   try{
-  for (unsigned int i = 0; i < liczba_miast; ++i) {
-    distance[i] = std::numeric_limits<double>::infinity(); /* [6.] */
-    visited[i] = false;
-    prev[i] = liczba_miast; /* Ustawia indeks na liczbę poza tablicą      */
-  }
-  distance[current] = 0;
-  visited[current] = true;
-  prev[current] = current;
+    for (unsigned int i = 0; i < liczba_miast; ++i) {
+      distance[i] = std::numeric_limits<double>::infinity(); /* [6.] */
+      visited[i] = false;
+      prev[i] = liczba_miast; /* Ustawia indeks na liczbę poza tablicą     */
+    }
+    distance[current] = 0;
+    visited[current] = true;
+    prev[current] = current;
+    
+    while (city_2_visited == false) {
+      ptr_TSC = tablica_sasiedztwa[current] -> get_head();
+      while( ptr_TSC != nullptr ) {
+        wsk_SPCC = tablica_sasiedztwa[current] -> get_elem(ptr_TSC);
+        city_index = get_ind(opposite(tablica_indeksow_miast[current], wsk_SPCC));
+        curr_distance = get_str_polaczenia(wsk_SPCC).distance + distance[current];
   
-  while (city_2_visited == false) {
-    cout <<"|  "<<get_str_miasto(tablica_indeksow_miast[current]).name << endl;
-    ptr_TSC = tablica_sasiedztwa[current] -> get_head();
-    while( ptr_TSC != nullptr ) {
-      // cout 
-      //   << " C1: "<<left<< setw(15) << get_str_polaczenia(ptr_TSC, current).city_1
-      //   << " C2: "<<left<<setw(15) << get_str_polaczenia(ptr_TSC, current).city_2;
-      //   // << " distance: " << get_str_polaczenia(ptr_TSC, current).distance;
-      //   // << endl; 
-      wsk_SPCC = tablica_sasiedztwa[current] -> get_elem(ptr_TSC);
-      city_index = get_ind(opposite(tablica_indeksow_miast[current], wsk_SPCC));
-      curr_distance = get_str_polaczenia(wsk_SPCC).distance + distance[current];
-      // cout
-      //   << "       dis[city_index] " << distance[city_index]
-      //   << "  curr_dis " << curr_distance
-      //   << "  " << get_str_miasto(tablica_indeksow_miast[city_index]).name
-      //   << endl;
-      if(distance[city_index] > curr_distance) {
-        distance[city_index] = curr_distance;
-        prev[city_index] = current;
+        if(distance[city_index] > curr_distance) {
+          distance[city_index] = curr_distance;
+          prev[city_index] = current;
+        }
+        if(visited[city_index] == false) {
+          Queue->addFront(city_index);
+          visited[city_index] = true;
+        }
+        ptr_TSC = tablica_sasiedztwa[current] -> get_next(ptr_TSC);
       }
-      if(visited[city_index] == false) {
-        Queue->addFront(city_index);
-        visited[city_index] = true;
-      } //else cout << "VISITED!!!\n";
-      ptr_TSC = tablica_sasiedztwa[current] -> get_next(ptr_TSC);
-    }
-    city_index = Queue->front();
-    delete_elem_Queue = Queue->get_head();
-    for(node<unsigned int>* q = Queue->get_head(); q != nullptr; q = Queue->get_next(q)) {
-      cout 
-        << "distance[city_index] " 
-        <<left<<setw(6)<< distance[city_index]
-        << "    distance[Queue->get_elem(q)] " 
-        <<left<<setw(6)<< distance[Queue->get_elem(q)]
-        <<left<<setw(15)<< get_str_miasto(tablica_indeksow_miast[city_index]).name
-        <<" "<<left<<setw(15)
-        << get_str_miasto(tablica_indeksow_miast[Queue->get_elem(q)]).name
-        << endl;
-      if (distance[city_index] > distance[Queue->get_elem(q)]) {
-        city_index = Queue->get_elem(q);
-        delete_elem_Queue = q;
+      city_index = Queue->front();
+      delete_elem_Queue = Queue->get_head();
+      for(node<unsigned int>* q = Queue->get_head(); q != nullptr; q = Queue->get_next(q)) {
+        if (distance[city_index] > distance[Queue->get_elem(q)]) {
+          city_index = Queue->get_elem(q);
+          delete_elem_Queue = q;
+        }
       }
+      Queue->removeInside(delete_elem_Queue);
+      current = city_index;
+      if(current == indeks_map.at(city_2)) city_2_visited = true;
+      /* pasek_postepu_std_err_display(); */
+      
     }
-    cout << endl;
-    Queue->removeInside(delete_elem_Queue);
-    // cout << "Current city " << city_index 
-    //   << "  " << get_str_miasto(tablica_indeksow_miast[city_index]).name
-    //   << endl;
-    current = city_index;
-    //visited[current] = true;
-    if(current == indeks_map.at(city_2)) city_2_visited = true;
-    pasek_postepu_std_err_display();
-    
-
-    // cin >> city_index; ///////////////////////////////////////////////////
-  }
-    city_index = indeks_map.at(city_2);
-    while (city_index != indeks_map.at(city_1)){
+      city_index = indeks_map.at(city_2);
+      while (city_index != indeks_map.at(city_1)){
+        cerr 
+          << get_str_miasto(tablica_indeksow_miast[city_index]).name
+          << endl;
+        city_index = prev[city_index];
+      }
       cerr 
-        << get_str_miasto(tablica_indeksow_miast[city_index]).name
-        << endl;
-      city_index = prev[city_index];
-    }
-    cerr 
-    << get_str_miasto(tablica_indeksow_miast[city_index]).name
-    << endl;
-    
-
-    
-  } catch (const std::exception& e) {
-    cerr 
-      << "Exception: " << e.what() << endl
-      << "     type: " << typeid(e).name() << endl
-      << "      fun: G_graf.cpp -> void graf::algorytm_Dijkstra(const string& city_1, const string& city_2)"
+      << get_str_miasto(tablica_indeksow_miast[city_index]).name
       << endl;
-      //<< " Wrong ID: " << id << endl;
-    
+      
+  
+      
+  } catch (const std::exception& e) {
     unsigned int liczba_nie_odwiedzonych_miast = 0;
     unsigned int liczba_____odwiedzonych_miast = 0;
     for(unsigned int i = 0; i < liczba_miast; ++i) {
@@ -112,6 +99,10 @@ void graf::algorytm_Dijkstra(const string& city_1, const string& city_2) {
       else ++liczba_____odwiedzonych_miast;
     }
     cerr 
+      << "Exception: " << e.what() << endl
+      << "     type: " << typeid(e).name() << endl
+      << "      fun: G_graf.cpp -> void algorytm_Dijkstra(const string&, const string&)"
+      << endl
       << "Liczba nie odwiedzoych miast: " << liczba_nie_odwiedzonych_miast << endl
       << "   Liczba odwiedzonych miast: " << liczba_____odwiedzonych_miast << endl
       << "             Wszytkie miasta: " 
@@ -130,9 +121,11 @@ void graf::algorytm_Dijkstra(const string& city_1, const string& city_2) {
   return;
 }
 
-// ///////////////////////////////////////////////////
 
 
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\  Pasek postępu  /‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 void graf::pasek_postepu_std_err_display() {
   static int zakres = lista_miast->get_nodeNumber();
   static int licznik = 0;
