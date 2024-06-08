@@ -6,6 +6,7 @@ void graf::algorytm_Dijkstra(const string& city_1, const string& city_2) {
   /* d -> odległości od źródła dla wszystkich wierzchołków grafu           */
   double* distance = new double[liczba_miast];
   bool* visited = new bool[liczba_miast];
+  bool city_2_visited = false;
   unsigned int* prev = new unsigned int[liczba_miast];
   /* kolejks priorytetowa Q -> nieodwiedzone spotkane wierzchołki          */
   lista<unsigned int>* Queue = new lista<unsigned int>;
@@ -26,7 +27,7 @@ void graf::algorytm_Dijkstra(const string& city_1, const string& city_2) {
   visited[current] = true;
   prev[current] = current;
   
-  while (visited[indeks_map.at(city_2)] != true) {
+  while (city_2_visited == false) {
     cout <<"|  "<<get_str_miasto(tablica_indeksow_miast[current]).name << endl;
     ptr_TSC = tablica_sasiedztwa[current] -> get_head();
     while( ptr_TSC != nullptr ) {
@@ -76,27 +77,26 @@ void graf::algorytm_Dijkstra(const string& city_1, const string& city_2) {
     //   << "  " << get_str_miasto(tablica_indeksow_miast[city_index]).name
     //   << endl;
     current = city_index;
-    visited[current] = true;
+    //visited[current] = true;
+    if(current == indeks_map.at(city_2)) city_2_visited = true;
     pasek_postepu_std_err_display();
     
 
     // cin >> city_index; ///////////////////////////////////////////////////
   }
-    unsigned int liczba_nie_odwiedzonych_miast = 0;
-    unsigned int liczba_____odwiedzonych_miast = 0;
-    for(unsigned int i = 0; i < liczba_miast; ++i) {
-      if(visited[i] == false) {
-        ++liczba_nie_odwiedzonych_miast;
-        cerr << get_str_miasto(tablica_indeksow_miast[i]).name << endl;
-      }
-      else ++liczba_____odwiedzonych_miast;
+    city_index = indeks_map.at(city_2);
+    while (city_index != indeks_map.at(city_1)){
+      cerr 
+        << get_str_miasto(tablica_indeksow_miast[city_index]).name
+        << endl;
+      city_index = prev[city_index];
     }
     cerr 
-      << "Liczba nie odwiedzoych miast: " << liczba_nie_odwiedzonych_miast << endl
-      << "   Liczba odwiedzonych miast: " << liczba_____odwiedzonych_miast << endl
-      << "             Wszytkie miasta: " 
-      << liczba_nie_odwiedzonych_miast + liczba_____odwiedzonych_miast << endl
-      << "            Wielkość tablicy: " << liczba_miast << endl;
+    << get_str_miasto(tablica_indeksow_miast[city_index]).name
+    << endl;
+    
+
+    
   } catch (const std::exception& e) {
     cerr 
       << "Exception: " << e.what() << endl
@@ -131,9 +131,7 @@ void graf::algorytm_Dijkstra(const string& city_1, const string& city_2) {
 }
 
 // ///////////////////////////////////////////////////
-// if (distance[city_index] > distance[Queue->get_elem(q)]) {
-//   city_index = Queue->get_elem(q);
-// SPRAWDZIĆ DLACZEGO w pierwszym prównaniu nie są porównywane te same rzeczy
+
 
 void graf::pasek_postepu_std_err_display() {
   static int zakres = lista_miast->get_nodeNumber();

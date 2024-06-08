@@ -411,7 +411,7 @@ void graf::test() {
   // string city_1 = "GorzowWielkopolski", city_2 = "Glubczyce";
   // string city_1 = "GorzowWielkopolski", city_2 = "GorzowWielkopolski";
   // string city_1 = "a", city_2 = "c";
-  string city_1 = "Bogatynia", city_2 = "Warszawa";
+  string city_1 = "Bogatynia", city_2 = "Sejny";
   node<miasto>* A1 = get_city_wsk_by_id(city_1);
   node<miasto>* A2 = get_city_wsk_by_id(city_2);
   // curve_distance(A1, A2); return;
