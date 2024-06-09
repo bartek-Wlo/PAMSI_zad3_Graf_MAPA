@@ -18,52 +18,30 @@ void graf::algorytm_Dijkstra(const string& city_1, const string& city_2) {
   unsigned int* prev = new unsigned int[liczba_miast];
   /* kolejka priorytetowa Q -> Wierzchołki którym raz wyzaczano połaczenie */
   lista<unsigned int>* Queue = new lista<unsigned int>;
-
   /* Wskaźnik na Queue do usuwania wierzchołków z wyzanczonymi połączeniami*/
   node<unsigned int>* delete_elem_Queue = nullptr;
-  /* Wskaźnik do listy połaczeń aktualnie rozpatrywanego miasta.           */
-  node< node<polaczenia>* >* ptr_TSC = nullptr; /* Tab Sąsiedztwa Current  */
-  /* Wskaźnik do struktury z jednym połączeniem  aktualnego miasta         */
-  node<polaczenia>* wsk_SPCC = nullptr;/* Struktura Połączenia Current City*/
 
   /* Czy miasto docelowe, było już odwiedzone  (Wyznacano jego połączenia) */
   bool city_2_visited = false;
   /* Indeks aktualnie rozpatrywanego miasta.                               */
   unsigned int current = indeks_map.at(city_1);
-  /* 1. Ideks miasta po drugiej stronie połączenia                         */
   /* 2. Ideks do iterowania po kolejce Queue i  wybrania kolejnego miasta  */
   /* 3. Ideks do zapisywania prev, przy wświetlaniu trasy.                 */
   unsigned int city_index;
-  /* Dystans: trasa do tego miasta + połaczenie z następnym.               */
-  double curr_distance;
 
   try{
     for (unsigned int i = 0; i < liczba_miast; ++i) {
       distance[i] = std::numeric_limits<double>::infinity(); /* [6.] */
-      visited[i] = false;
+      visited[i] = false;     /* Ustawianie początkowych parametrów miastom*/
       prev[i] = liczba_miast; /* Ustawia indeks na liczbę poza tablicą     */
     }
-    distance[current] = 0;
+    distance[current] = 0;  /* Ustawianie parametrów dla miata wyjściowego */
     visited[current] = true;
     prev[current] = current;
     
     while (city_2_visited == false) {
-      ptr_TSC = tablica_sasiedztwa[current] -> get_head();
-      while( ptr_TSC != nullptr ) {
-        wsk_SPCC = tablica_sasiedztwa[current] -> get_elem(ptr_TSC);
-        city_index = get_ind(opposite(tablica_indeksow_miast[current], wsk_SPCC));
-        curr_distance = get_str_polaczenia(wsk_SPCC).distance + distance[current];
-  
-        if(distance[city_index] > curr_distance) {
-          distance[city_index] = curr_distance;
-          prev[city_index] = current;
-        }
-        if(visited[city_index] == false) {
-          Queue->addFront(city_index);
-          visited[city_index] = true;
-        }
-        ptr_TSC = tablica_sasiedztwa[current] -> get_next(ptr_TSC);
-      }
+      aktualizuj_dystans_i_dodaj_do_Queue(current, distance, visited, prev, Queue);
+        
       city_index = Queue->front();
       delete_elem_Queue = Queue->get_head();
       for(node<unsigned int>* q = Queue->get_head(); q != nullptr; q = Queue->get_next(q)) {
@@ -78,18 +56,17 @@ void graf::algorytm_Dijkstra(const string& city_1, const string& city_2) {
       /* pasek_postepu_std_err_display(); */
       
     }
-      city_index = indeks_map.at(city_2);
-      while (city_index != indeks_map.at(city_1)){
-        cerr 
-          << get_str_miasto(tablica_indeksow_miast[city_index]).name
-          << endl;
-        city_index = prev[city_index];
-      }
+    city_index = indeks_map.at(city_2);
+    while (city_index != indeks_map.at(city_1)) {
       cerr 
-      << get_str_miasto(tablica_indeksow_miast[city_index]).name
-      << endl;
-      
-  
+        << get_str_miasto(tablica_indeksow_miast[city_index]).name
+        << endl;
+      city_index = prev[city_index];
+    }
+    cerr 
+    << get_str_miasto(tablica_indeksow_miast[city_index]).name
+    << endl;
+        
       
   } catch (const std::exception& e) {
     unsigned int liczba_nie_odwiedzonych_miast = 0;
@@ -121,6 +98,44 @@ void graf::algorytm_Dijkstra(const string& city_1, const string& city_2) {
   return;
 }
 
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\_/‾\ Aktualizuj dystans wierzchołków  do wyjściowego /‾\_/‾\_/‾\_/*/
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+void graf::aktualizuj_dystans_i_dodaj_do_Queue(const unsigned int current,
+                    double* distance, bool* visited, unsigned int* prev,
+                    lista<unsigned int>* Queue) const {
+  /* Wskaźnik na node ze wskaźnikiem do node<polaczenia>                   */
+  /* Służący do iteracji po wszytkich połączeniach danego miasta           */
+  node< node<polaczenia>* >* ptr_TSC = nullptr; /* Tab Sąsiedztwa Current  */
+  /* Wskaźnik do node<polaczenia> z jednym połączeniem aktualnego miasta   */
+  node<polaczenia>* wsk_SPCC = nullptr;/* Struktura Połączenia Current City*/
+  /* Ideks miasta po drugiej stronie aktulanego połączenia                 */
+  unsigned int city_index;
+  /* Dystans: trasa do tego miasta + połaczenie z następnym.               */
+  double curr_distance;
+
+  ptr_TSC = tablica_sasiedztwa[current] -> get_head();
+  /* Pętla aż ptr_TSC przejdzie po wszytkich połączeniach danego miasta    */
+  while( ptr_TSC != nullptr ) {
+    /* Wskaźnik SPCC do noda z aktualnie rozpatrywanym połączeniem.        */
+    wsk_SPCC = tablica_sasiedztwa[current] -> get_elem(ptr_TSC);
+    /* Ideks miasta po drugiej stronie połaczenia. opos(Miasto, połączenie)*/
+    city_index= get_ind(opposite(tablica_indeksow_miast[current], wsk_SPCC));
+    /* Dystance = dystans połączenia + dystan do aktualnego miasta.        */
+    curr_distance= get_str_polaczenia(wsk_SPCC).distance + distance[current];
+
+    if(distance[city_index] > curr_distance) { /* Jeżeli dotychczasowy     */
+      distance[city_index] = curr_distance;    /* dystans > nowej ścieżki  */
+      prev[city_index] = current;              /* to podmień długość oraz  */
+    }                                          /* Zamień poprzednie miasto */
+    if(visited[city_index] == false) { /* Dodaj do rozpatrywanych miast (Q)*/
+      Queue->addFront(city_index);     /* Miasto oppos gdy nie wyznaczano  */
+      visited[city_index] = true;      /* do niego wcześniej zadnej ścieżki*/
+    }
+    /* Przesuń na koleine połaczenie dla danego miasta                     */
+    ptr_TSC = tablica_sasiedztwa[current] -> get_next(ptr_TSC);
+  } /* Queue przechowuje indeksy miast do których już raz wyznaczono trasę,*/
+}   /* więc jest sens rozpatrywać je jako kolejne miasto do odwiedzenia.   */
 
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/

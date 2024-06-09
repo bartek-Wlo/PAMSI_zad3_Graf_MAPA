@@ -68,6 +68,8 @@ private:
 /* A* Astar */
 /* Dijkstra */
   void pasek_postepu_std_err_display();
+  void aktualizuj_dystans_i_dodaj_do_Queue(const unsigned int current, double* distance, 
+                   bool* visited, unsigned int* prev, lista<unsigned int>* Queue) const;
 
 
 };
