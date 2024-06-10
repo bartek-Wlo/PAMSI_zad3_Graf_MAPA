@@ -5,9 +5,10 @@
 graf::graf() : size_TAB_sasiedztwa(0) {
   lista_miast = new lista<miasto>;
   lista_polaczen = new lista<polaczenia>;
-  time = true;
+  time = false;
 
   file_name = "json/all_W_CONNECTIONS.json";
+  // file_name = "json/Z_test_V2.json";
 
 }
 
@@ -433,10 +434,12 @@ bool graf::areAdjacent(const node<miasto>* c1, const node<miasto>* c2) const {
 void graf::test() {
   miasto tmp;
   // string city_1 = "GorzowWielkopolski", city_2 = "Glubczyce";
-  string city_1 = "Staszow", city_2 = "Zaklikow";
+  // string city_1 = "Staszow", city_2 = "Zaklikow";
   // string city_1 = "GorzowWielkopolski", city_2 = "GorzowWielkopolski";
   // string city_1 = "a", city_2 = "c";
-  // string city_1 = "Bogatynia", city_2 = "Sejny";
+  // string city_1 = "Sejny", city_2 = "Bogatynia";
+  // string city_1 = "Wroclaw", city_2 = "Bogatynia";
+  string city_1 = "Bogatynia", city_2 = "Sejny";
   node<miasto>* A1 = get_city_wsk_by_id(city_1);
   node<miasto>* A2 = get_city_wsk_by_id(city_2);
   // curve_distance(A1, A2); return;

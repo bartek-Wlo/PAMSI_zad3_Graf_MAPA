@@ -7,10 +7,16 @@
 /*‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾*/
 /*                          Jedziemy od city 1. do  city 2.                */
 void graf::algorytm_Astar(const string& city_1, const string& city_2) { 
+  /* Weryfikacja istnienia podanych miast w pliku                          */
+  try {indeks_map.at(city_1); indeks_map.at(city_2);}
+  catch (const std::out_of_range& e) {cerr << "NOTFAUND" << endl; return;}
+  
   /* Lista Odwiedzonych Miast (zapisuje inteksy tablicy)                   */
   lista<SOM>* LOM = new lista<SOM>;
   /* Lista F(x) = G(x) + H(x) zapisuje obliczone wartości f. + wsk na pol. */
   lista<Fx>* LFX = new lista<Fx>;
+  /* Lista stringów do wyświetlenia ścieżki w odwrotnej kolejności.        */
+  lista<string>* LS = new lista<string>;
   
   /* Wsk do iterowania w po wszytkich elementach listy LOM                 */
   node<SOM>* display_ptr_LOM = nullptr;
@@ -23,15 +29,15 @@ void graf::algorytm_Astar(const string& city_1, const string& city_2) {
 
   try
   {
+  /* Weryfikacja istnienia podanych miast w pliku                          */
+  indeks_map.at(city_1); indeks_map.at(city_2);
   /* Dodawanie indeksu miasta startowego do listy indeksów odwiedzonych m. */
   LOM->addFront( {indeks_map.at(city_1), nullptr, 0} );
   CCPL = LOM->get_head(); /* Rozpatrujemy miasto startowe                  */
 
-  /* while( wsk najnowszego odwiedzonego miasta != wsk miasta docelowego)  */
-  while( false == areAdjacent(
-                          tablica_indeksow_miast[LOM->get_elem(CCPL).index],
-                          DOCELOWE)
-       ) {
+  /* ################################# 1 ################################# */
+  /* Przeszukujemy aż wsk najnowszego odwiedzonego == wsk miasta docelowego*/
+  while(tablica_indeksow_miast[LOM->get_elem(CCPL).index] != DOCELOWE) {
     dla_wszytkich_polaczen_dodaj_F_od_x(LOM, CCPL, DOCELOWE, LFX);
     if (LFX->empty()) throw std::logic_error("List LFX->empty() == TRUE\n           G_graf_Astar.cpp -> algorytm_Astar(const string&,const string&)");
 
@@ -61,58 +67,47 @@ void graf::algorytm_Astar(const string& city_1, const string& city_2) {
     /* Ustawiamy rozpatrywane miasto na właśnie dodane miasto              */
     CCPL = LOM->get_head();
     /* Usuwamy użyte połączenie, By nie brać go po uwagę find_min_Fx_in_LFX*/
-    LFX->removeInside(LFX_MIN);
+    LFX->removeInside(&LFX_MIN);
     remove_old_connections(LFX, LOM->get_elem(CCPL).index);
-    /* Może się zdarzyć, że F(x) dla połączeń z nowego rozpatrywanego miasta*/
-    /* nie będą MIN, w tedy trzeba przesunąć wsk w sekscji while(isTop(...))*/
+    /*Może się zdarzyć, że F(x) dla połączeń z nowego rozpatrywanego miasta*/
+    /*nie będą MIN, w tedy trzeba przesunąć wsk w sekscji while(isTop(...))*/
   }
   
-  /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\ DEBUG DISPLAY /‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
-
-  node<polaczenia>* R = get_road(DOCELOWE, tablica_indeksow_miast[LOM->front().index]);
-    int T;
-  if (time == true) {
-    T = get_speed_limit(get_str_polaczenia(R).road_type);
-  } else T = 1;
-
-  cout << "Dystans: " 
-    << LOM->front().dis_Gx 
-    + lista_polaczen->get_elem(R).distance/T
-    << "   Wężły przeanalizowane: "
-    << LOM->get_nodeNumber() +1
-    << endl;
+  /* ################################# 2 ################################# */
+  /* ################### Wyświtlanie ścieżki do miasta ################### */
+  /* Wczytywanie do LS ścieżki w odwrotnej kolejności                      */
   display_ptr_LOM = LOM->get_head();
-  cout 
-  << "name: " << left << setw(20) << lista_miast->get_elem(DOCELOWE).name
-  << " id: " << left << setw(20) << lista_miast->get_elem(DOCELOWE).id
-  << std::endl;
   while (display_ptr_LOM != nullptr) {
-    cout 
-      << "name: " << left << setw(20) <<
-        lista_miast->get_elem(
-          tablica_indeksow_miast[LOM->get_elem(display_ptr_LOM).index]
-        ).name
-      << " id: " << left << setw(20) <<
-      lista_miast->get_elem(
-        tablica_indeksow_miast[LOM->get_elem(display_ptr_LOM).index]
-      ).id
-      << std::endl;
-
+    LS->addFront(lista_miast->get_elem(
+          tablica_indeksow_miast[LOM->get_elem(display_ptr_LOM).index] ).id);
     display_ptr_LOM = LOM->get_elem(display_ptr_LOM).prev;
   }
+  /* Wyświetlanie z LS ściezki w dobrej kolejności                         */
+  for (node<string>* i = LS->get_head(); i != nullptr; ) {
+    cout << LS->front() << " ";
+    i = LS->get_next(i);
+    LS->removeFront();
+  }/*    Dystans                        Wężły przeanalizowane              */
+  cout << LOM->front().dis_Gx << " " <<  LOM->get_nodeNumber() << endl;
+
+  /* ################################# 3 ################################# */
+  /* ############################### CATCH ############################### */
   } catch (const std::exception& e) {
     cerr 
-      << "Exception: " << e.what() << endl
-      << "     type: " << typeid(e).name() << endl
-      << "      fun: G_graf_Astar.cpp -> void algorytm_Astar(string&, string&)"
-      << endl;
+      << "NOTFAUND " << endl;
+      // << "Exception: " << e.what() << endl
+      // << "     type: " << typeid(e).name() << endl
+      // << "      fun: G_graf_Astar.cpp -> void algorytm_Astar(string&, string&)"
+      // << endl;
   }
   
 
   delete LOM; 
   delete LFX;
+  delete LS;
   LOM = nullptr;
   LFX = nullptr;
+  LS =  nullptr;
   return;
 }
 
@@ -133,6 +128,7 @@ const node<SOM>* CCPL, const node<miasto>* DOCELOWE, lista<Fx>* LFX) const {
   /* Wsk na miasto po drugiej stronie połączenia, zwracane z opposite(...) */
   node<miasto>* opposite_city = nullptr; /* Zmienna do upożątkowania kodu  */
   double predkosc;
+  static unsigned int curve_distance_predkosc = 130;
   
   ptr_LOM = tablica_sasiedztwa[LOM->get_elem(CCPL).index] -> get_head();
   /* Pętla aż ptr_LOM przejdzie po wszytkich połączeniach danego miasta    */
@@ -155,14 +151,14 @@ const node<SOM>* CCPL, const node<miasto>* DOCELOWE, lista<Fx>* LFX) const {
     if (IsInLOM(LOM, opposite_city) == false) {
       LFX->addFront({
         /* Dając 0 do LFX do 1' zmiennej "wyłączam" dokładniejszy wzór     */
-        // 0,
         LOM->get_elem(CCPL).dis_Gx +               /* G_2(x)               */
         ( get_str_polaczenia(ptr_conect).distance  /* G_1(x)    = G(x)     */
-        /predkosc ),    
+        / predkosc ),    
         LOM->get_elem(CCPL).dis_Gx +                 /*     G_2(x)         */
-        (( get_str_polaczenia(ptr_conect).distance + /*     G_1(x)  = F(x) */
-        curve_distance(opposite_city, DOCELOWE) )    /*     H(x)           */
-        /predkosc ),
+        ( get_str_polaczenia(ptr_conect).distance /  /*     G_1(x)  = F(x) */
+        predkosc ) +
+        ( curve_distance(opposite_city, DOCELOWE) /  /*     H(x)           */
+        curve_distance_predkosc ) ,
         ptr_conect /* Wskaźnik na aktualne połączenie               WSK    */
       });
     }
@@ -233,9 +229,10 @@ void graf::remove_old_connections(lista<Fx>* LFX, const unsigned int ind) const 
       tablica_indeksow_miast[ind],
       LFX->get_elem(LFX_elem_ptr).wsk_na_polaczenie
     )) {
-      LFX->removeInside(LFX_elem_ptr);
+      LFX->removeInside(&LFX_elem_ptr);
     }
-    LFX_elem_ptr = LFX->get_next(LFX_elem_ptr);
+    if(LFX->empty()) LFX_elem_ptr = nullptr;
+    else LFX_elem_ptr = LFX->get_next(LFX_elem_ptr);
   }
 }
 

@@ -34,7 +34,7 @@ public:
   const E &front() const;          // zwróć pierwszy element.
   void addFront(const E &dane);    // Dodaj dane na początek listy.
   void removeFront();              // Usuń pierwszy element listy.
-  void removeInside(node<E> *ptr); // Usuń element na liście. ZŁOŻONOŚC O(n)
+  void removeInside(node<E> **ptr);// Usuń element na liście. ZŁOŻONOŚC O(n)
 
   unsigned int get_nodeNumber() const {return node_number;}
   const E& get_elem(const node<E>* ptr) const;
@@ -90,23 +90,24 @@ void lista<E>::removeFront() {
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 template <typename E> /* Złożoność O(n) */
-void lista<E>::removeInside(node<E> *ptr_to_elem_being_removed) {
-  node<E> *looking /* for ptr->next == ptr_to_elem_being_removed */ = head;
+void lista<E>::removeInside(node<E> **ptr_to_elem_being_removed) {
+  node<E> *looking /* for ptr->next == *ptr_to_elem_being_removed */ = head;
   if (empty()) {
     throw std::out_of_range
       ("Removing in empty list.\n           G_lista.h -> removeInside()");
   }
-  if (head == ptr_to_elem_being_removed) {
+  if (head == *ptr_to_elem_being_removed) {
     removeFront();
     return;
   }
-  while (looking->next != ptr_to_elem_being_removed) {
+  while (looking->next != *ptr_to_elem_being_removed) {
     looking = looking->next;
     if (looking->next == nullptr) throw std::invalid_argument 
       ("ptr_to_elem_being_removed is not on this list\n           G_lista.h -> removeInside(node<E>* ptr_to_elem_being_removed)");
   }
-  looking->next = ptr_to_elem_being_removed->next;
-  delete ptr_to_elem_being_removed;
+  looking->next = (*ptr_to_elem_being_removed)->next;
+  delete *ptr_to_elem_being_removed;
+  *ptr_to_elem_being_removed = looking;
 }
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
