@@ -33,7 +33,6 @@ private:
   void open();
 
 public:
-  void test(); /* <-- USUNĄĆ */
   void set_file_name(string s) {file_name = s;}
   void set_time(bool b) {time = b;}
   graf();

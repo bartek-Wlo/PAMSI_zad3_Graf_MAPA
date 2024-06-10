@@ -426,67 +426,6 @@ bool graf::areAdjacent(const node<miasto>* c1, const node<miasto>* c2) const {
 }
 
 
-/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
-/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
-/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
-/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
-
-void graf::test() {
-  miasto tmp;
-  // string city_1 = "GorzowWielkopolski", city_2 = "Glubczyce";
-  // string city_1 = "Staszow", city_2 = "Zaklikow";
-  // string city_1 = "GorzowWielkopolski", city_2 = "GorzowWielkopolski";
-  // string city_1 = "a", city_2 = "c";
-  // string city_1 = "Sejny", city_2 = "Bogatynia";
-  // string city_1 = "Wroclaw", city_2 = "Bogatynia";
-  string city_1 = "Bogatynia", city_2 = "Sejny";
-  node<miasto>* A1 = get_city_wsk_by_id(city_1);
-  node<miasto>* A2 = get_city_wsk_by_id(city_2);
-  // curve_distance(A1, A2); return;
-  node<polaczenia>* D1 = nullptr;
-
-  cout 
-    << "Curve distance between " << city_1 << " and " << city_2 << ": "
-    << curve_distance(A1, A2) << endl << endl;
-  if (areAdjacent(A1, A2)) {
-    cout << "A1 and A2 are adjacent" << endl;
-    D1 = get_road(A1, A2);
-  } else {
-    cout << "_____________________________ A* _____________________________" << endl;
-    algorytm_Astar(city_1, city_2);
-    cout << endl;
-    cout << "___________________________Dijkstra___________________________" << endl;
-    algorytm_Dijkstra(city_1, city_2);
-    return;
-  }
-  std::cout 
-    << " city_1: " << left << setw(20) << get_str_polaczenia(D1).city_1
-    << " city_2: " << left << setw(20) << get_str_polaczenia(D1).city_2
-    << " road_name: " <<left<<setw(20) << get_str_polaczenia(D1).road_name
-    << std::endl << "                             "
-    << " road_type: " <<left<<setw(5) << get_str_polaczenia(D1).road_type
-    << " distance: " <<left<<setw(10) << get_str_polaczenia(D1).distance
-    << std::endl; /* setw() [4.] */
-  
-  //tmp = lista_miast->get_elem(A1);
-  std::cout 
-    << " IND: " << left << setw(5) << get_ind(A1)
-    << " id: " << left << setw(20) << get_str_miasto(A1).id
-    << " lati: " << left << setw(10) << get_str_miasto(A1).latitude
-    << " long: " << left << setw(10) << get_str_miasto(A1).longitude
-    << " name: " << left << setw(20) << get_str_miasto(A1).name
-    << std::endl; /* setw() [4.] */
-  
-  tmp = lista_miast->get_elem(A2);
-  std::cout 
-    << " IND: " << left << setw(5) << get_ind(A2)
-    << " id: " << left << setw(20) << tmp.id
-    << " lati: " << left << setw(10) << tmp.latitude
-    << " long: " << left << setw(10) << tmp.longitude
-    << " name: " << left << setw(20) << tmp.name
-    << std::endl; /* setw() [4.] */
-}
-
 
 
 
