@@ -18,18 +18,17 @@ void graf::algorytm_Dijkstra(const string& city_1, const string& city_2) {
   unsigned int* prev = new unsigned int[liczba_miast];
   /* kolejka priorytetowa Q -> Wierzchołki którym raz wyzaczano połaczenie */
   lista<unsigned int>* Queue = new lista<unsigned int>;
-  /* Wskaźnik na Queue do usuwania wierzchołków z wyzanczonymi połączeniami*/
-  node<unsigned int>* delete_elem_Queue = nullptr;
-
+  
   /* Czy miasto docelowe, było już odwiedzone  (Wyznacano jego połączenia) */
   bool city_2_visited = false;
   /* Indeks aktualnie rozpatrywanego miasta.                               */
   unsigned int current = indeks_map.at(city_1);
-  /* 2. Ideks do iterowania po kolejce Queue i  wybrania kolejnego miasta  */
-  /* 3. Ideks do zapisywania prev, przy wświetlaniu trasy.                 */
+  /* Ideks do zapisywania prev, przy wświetlaniu trasy.                    */
   unsigned int city_index;
 
   try{
+    /* ################################ 1 ################################ */
+    /* ########## Ustawnianie wyjściowych wartości  w tablicach ########## */
     for (unsigned int i = 0; i < liczba_miast; ++i) {
       distance[i] = std::numeric_limits<double>::infinity(); /* [6.] */
       visited[i] = false;     /* Ustawianie początkowych parametrów miastom*/
@@ -38,36 +37,34 @@ void graf::algorytm_Dijkstra(const string& city_1, const string& city_2) {
     distance[current] = 0;  /* Ustawianie parametrów dla miata wyjściowego */
     visited[current] = true;
     prev[current] = current;
-    
+
+    /* ################################ 2 ################################ */
+    /* ####### Odwiedzamy każde miasto  aż dojdziemy do docelowego ####### */
     while (city_2_visited == false) {
       aktualizuj_dystans_i_dodaj_do_Queue(current, distance, visited, prev, Queue);
-        
-      city_index = Queue->front();
-      delete_elem_Queue = Queue->get_head();
-      for(node<unsigned int>* q = Queue->get_head(); q != nullptr; q = Queue->get_next(q)) {
-        if (distance[city_index] > distance[Queue->get_elem(q)]) {
-          city_index = Queue->get_elem(q);
-          delete_elem_Queue = q;
-        }
-      }
-      Queue->removeInside(delete_elem_Queue);
-      current = city_index;
+      current = szukaj_min_Queue(distance, Queue);
+      /* Jeżeli dodtarliśmy do miasta docelowego city_2_visited = true     */
       if(current == indeks_map.at(city_2)) city_2_visited = true;
-      /* pasek_postepu_std_err_display(); */
-      
+      /* pasek_postepu_std_err_display(); */ 
     }
+    /* ################################ 3 ################################ */
+    /* ################## Wyświtlanie ścieżki do miasta ################## */
     city_index = indeks_map.at(city_2);
+    cout 
+      << "Dystans: " << distance[indeks_map.at(city_2)] 
+      << "   Wężły przeanalizowane: " << Queue->get_nodeNumber()+1 << endl;
     while (city_index != indeks_map.at(city_1)) {
       cerr 
+        << "name: "
         << get_str_miasto(tablica_indeksow_miast[city_index]).name
         << endl;
       city_index = prev[city_index];
     }
     cerr 
-    << get_str_miasto(tablica_indeksow_miast[city_index]).name
-    << endl;
-        
-      
+      << "name: "
+      << get_str_miasto(tablica_indeksow_miast[city_index]).name
+      << endl;
+    
   } catch (const std::exception& e) {
     unsigned int liczba_nie_odwiedzonych_miast = 0;
     unsigned int liczba_____odwiedzonych_miast = 0;
@@ -78,7 +75,7 @@ void graf::algorytm_Dijkstra(const string& city_1, const string& city_2) {
     cerr 
       << "Exception: " << e.what() << endl
       << "     type: " << typeid(e).name() << endl
-      << "      fun: G_graf.cpp -> void algorytm_Dijkstra(const string&, const string&)"
+      << "      fun: G_graf_ADijkstra.cpp -> void algorytm_Dijkstra(string&, string&)"
       << endl
       << "Liczba nie odwiedzoych miast: " << liczba_nie_odwiedzonych_miast << endl
       << "   Liczba odwiedzonych miast: " << liczba_____odwiedzonych_miast << endl
@@ -113,16 +110,21 @@ void graf::aktualizuj_dystans_i_dodaj_do_Queue(const unsigned int current,
   unsigned int city_index;
   /* Dystans: trasa do tego miasta + połaczenie z następnym.               */
   double curr_distance;
+  double predkosc;
 
   ptr_TSC = tablica_sasiedztwa[current] -> get_head();
   /* Pętla aż ptr_TSC przejdzie po wszytkich połączeniach danego miasta    */
   while( ptr_TSC != nullptr ) {
     /* Wskaźnik SPCC do noda z aktualnie rozpatrywanym połączeniem.        */
     wsk_SPCC = tablica_sasiedztwa[current] -> get_elem(ptr_TSC);
+    if (time == true) {
+      predkosc = get_speed_limit(get_str_polaczenia(wsk_SPCC).road_type);
+    } else predkosc = 1;
     /* Ideks miasta po drugiej stronie połaczenia. opos(Miasto, połączenie)*/
     city_index= get_ind(opposite(tablica_indeksow_miast[current], wsk_SPCC));
     /* Dystance = dystans połączenia + dystan do aktualnego miasta.        */
-    curr_distance= get_str_polaczenia(wsk_SPCC).distance + distance[current];
+    curr_distance = 
+      distance[current] + (get_str_polaczenia(wsk_SPCC).distance / predkosc);
 
     if(distance[city_index] > curr_distance) { /* Jeżeli dotychczasowy     */
       distance[city_index] = curr_distance;    /* dystans > nowej ścieżki  */
@@ -136,6 +138,44 @@ void graf::aktualizuj_dystans_i_dodaj_do_Queue(const unsigned int current,
     ptr_TSC = tablica_sasiedztwa[current] -> get_next(ptr_TSC);
   } /* Queue przechowuje indeksy miast do których już raz wyznaczono trasę,*/
 }   /* więc jest sens rozpatrywać je jako kolejne miasto do odwiedzenia.   */
+
+
+
+
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\  Szukanie miasta z najmniejszym dystancem do wyjściowego  \_/‾\_/*/
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+unsigned int graf::szukaj_min_Queue(double* distance,
+                                lista<unsigned int>* Queue) const {
+  /* Wskaźnik na Queue mówiący gdzie znajduje się najmniejszy element      */
+  /* Ustawiamy wskaźnik na pierwszy node Queue.                            */
+  node<unsigned int>* delete_elem_Queue = Queue->get_head();
+  /* Ideks do iterowania po kolejce Queue i  wybrania kolejnego miasta     */
+  /* Ustawiamy odeks na pierwszy element Queue.                            */
+  unsigned int city_index = Queue->front();
+
+  if(Queue->empty()) throw std::runtime_error("Queue with visited cities is empty.\n           G_graf_ADijkstra.cpp -> szukaj_min_Q(double*,lista<unsigned int>*)"); 
+  
+  for(node<unsigned int>* q = Queue->get_head(); 
+                  Queue->get_next(q) != nullptr;) {
+    /* Zacznyna od przesunięcia by nie porównywać pierwszego elem ze sobą. */
+    q = Queue->get_next(q);
+    /* Jeżeli dystans aktualnie najmniejszy jest większy niż kolejny to:   */
+    if (distance[city_index] > distance[Queue->get_elem(q)]) {
+      city_index = Queue->get_elem(q);  /* 1. Ustaw indeks najmnijeszego   */
+      delete_elem_Queue = q;            /* 2. Nastaw na niego wskaźnik Q   */
+    }
+  }
+  /* Usuń najmniejszy element, bo w nastęnej pętli programu zwrócona przez */
+  /* tą funcje wartość nastawi aktualnie rozpatrywane miasto na właśnie    */
+  /* usuwane z Queue. Która to służy do szukania kolejnych miast do        */
+  /* odwiedzenia. A miasto to będzie odwiedzane w następnej pętli.         */
+  Queue->removeInside(delete_elem_Queue);
+  /* Ustawnianie rozpatrywanego miasta na właśnie usunięte z Queue.        */
+  return city_index; /* return city_index do zmiennej current              */
+}
+
+
 
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/

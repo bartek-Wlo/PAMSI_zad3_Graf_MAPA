@@ -28,6 +28,7 @@ private:
   string file_name;
   json data_json;
   map<string, unsigned int> indeks_map;
+  bool time;
 
   void open();
 
@@ -46,14 +47,15 @@ void set_file_name(string s) {file_name = s;}
   polaczenia get_str_polaczenia(const node< node<polaczenia>* >* p,
                                 const unsigned int i) const;
   miasto get_str_miasto(node<miasto>* m) const;
-  node<polaczenia>* get_road(node<miasto>* c1, node<miasto>* c2) const;
+  node<polaczenia>* get_road(const node<miasto>* c1, const node<miasto>* c2) const;
+  int get_speed_limit(const std::string)const;
 
 
   /* Zwraca odległość między miastami w linii krzywej (ziemia jest kulą) */
   double curve_distance(const node<miasto>* c1, const node<miasto>* c2) const;
   /* Ustawia c1, c2 na wierzchołki podanej krawędzi road */
   void endVertices(node<miasto>** c1, node<miasto>** c2, const node<polaczenia>* road) const;
-  /* Zwraca przeciw legły wierzchołek względem podanej krawędzi road */
+  /* Zwraca czy jeden z wierzchołków należy do podanej drogi         */
   bool isTop(const node<miasto>* c1, const node<polaczenia>* road) const;
   /* Zwraca przeciw legły wierzchołek względem podanej krawędzi road */
   node<miasto>* opposite(const node<miasto>* c1, const node<polaczenia>* road) const;
@@ -66,11 +68,16 @@ void set_file_name(string s) {file_name = s;}
 
 private:
 /* A* Astar */
+  void dla_wszytkich_polaczen_dodaj_F_od_x(lista<SOM>* LOM, const node<SOM>* CCPL,
+                              const node<miasto>* DOCELOWE, lista<Fx>* LFX) const;
+  void find_min_Fx_in_LFX(lista<Fx>* LFX, node<Fx>*& LFX_MIN) const;
+  bool IsInLOM(const lista<SOM>* LOM, const node<miasto>* opposite_city) const;
+  void remove_old_connections(lista<Fx>* LFX, const unsigned int ind) const;
 /* Dijkstra */
   void pasek_postepu_std_err_display();
   void aktualizuj_dystans_i_dodaj_do_Queue(const unsigned int current, double* distance, 
                    bool* visited, unsigned int* prev, lista<unsigned int>* Queue) const;
-
+  unsigned int szukaj_min_Queue(double* distance, lista<unsigned int>* Queue) const;
 
 };
 

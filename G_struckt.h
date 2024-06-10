@@ -21,9 +21,11 @@ struct polaczenia{
 struct SOM { /* Struktura do listy Odwiedzonych Miast */
   unsigned int index;
   node<SOM>* prev;
+  double dis_Gx;
 };
 
 struct Fx {
+  double Gx;
   double Gx_Hx;
   node<polaczenia>* wsk_na_polaczenie;
 };

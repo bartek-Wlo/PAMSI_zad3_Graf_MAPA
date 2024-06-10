@@ -5,8 +5,9 @@
 graf::graf() : size_TAB_sasiedztwa(0) {
   lista_miast = new lista<miasto>;
   lista_polaczen = new lista<polaczenia>;
+  time = true;
 
-  file_name = "json/W_dolnoslaski.json";
+  file_name = "json/all_W_CONNECTIONS.json";
 
 }
 
@@ -75,18 +76,15 @@ void graf::open() {
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 
 void graf::load_few() {
-  // const int number_of_files = 6;
-  // string cities[number_of_files] = {
-  //   "json/CONNECTIONS_slaskie_opolskie_malopolskie.json",
-  //   "json/W_dolnoslaski.json",
-  //   "json/W_lubuskie.json",
-  //   "json/W_malopolskie.json",
-  //   "json/W_opolskie.json",
-  //   "json/W_slaskie.json"
-  // };
-  const int number_of_files = 1;
-  // string cities[number_of_files] = {"json/Z_test_V1.json"};
-  string cities[number_of_files] = {"json/all_W_CONNECTIONS.json"};
+  const int number_of_files = 6;
+  string cities[number_of_files] = {
+    "json/CONNECTIONS_slaskie_opolskie_malopolskie.json",
+    "json/W_dolnoslaski.json",
+    "json/W_lubuskie.json",
+    "json/W_malopolskie.json",
+    "json/W_opolskie.json",
+    "json/W_slaskie.json"
+  };
   
   for (int i = 0; i < number_of_files; ++i) {
     set_file_name(cities[i]);
@@ -233,7 +231,7 @@ miasto graf::get_str_miasto(node<miasto>* m) const {
 }
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
-node<polaczenia>* graf::get_road(node<miasto>* c1, node<miasto>* c2) const {
+node<polaczenia>* graf::get_road(const node<miasto>* c1, const node<miasto>* c2) const {
   if (c1 == nullptr || c2 == nullptr) {
     throw std::invalid_argument ("node<miasto>* == nullptr\n           G_graf.cpp -> get_road(node<miasto>*,node<miasto>*)");
   }
@@ -260,7 +258,30 @@ node<polaczenia>* graf::get_road(node<miasto>* c1, node<miasto>* c2) const {
   throw std::logic_error  ("There is no road connecting both cities\n           G_graf.cpp -> get_road(node<miasto>*,node<miasto>*)");
 }
 
-
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+int graf::get_speed_limit(const std::string limit_name) const{
+  const char limit_type = limit_name[0];
+  switch(limit_type) {
+      case 'a':
+      case 'A':
+          return 130; /* autostrady  */
+          break;
+      case 's':
+      case 'S':
+          return 110; /* drogi szybkiego ruchu */
+          break;
+      case 'k':
+      case 'K':
+          return 90; /* drogi krajowej */
+          break;
+      case 'p':
+      case 'P':
+          return 70; /* drogi powiatowej */
+          break;
+      default:
+          throw std::invalid_argument("Unknown rode type\n           G_graf.cpp -> get_speed_limit(const std::string limit_name)");
+  }
+}
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\ curve  distance /‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
@@ -411,7 +432,8 @@ bool graf::areAdjacent(const node<miasto>* c1, const node<miasto>* c2) const {
 
 void graf::test() {
   miasto tmp;
-  string city_1 = "GorzowWielkopolski", city_2 = "Glubczyce";
+  // string city_1 = "GorzowWielkopolski", city_2 = "Glubczyce";
+  string city_1 = "Staszow", city_2 = "Zaklikow";
   // string city_1 = "GorzowWielkopolski", city_2 = "GorzowWielkopolski";
   // string city_1 = "a", city_2 = "c";
   // string city_1 = "Bogatynia", city_2 = "Sejny";
