@@ -88,7 +88,19 @@ void graf::algorytm_Astar(const string& city_1, const string& city_2) {
     i = LS->get_next(i);
     LS->removeFront();
   }/*    Dystans                        Wężły przeanalizowane              */
-  cout << LOM->front().dis_Gx << " " <<  LOM->get_nodeNumber() << endl;
+  if(!time)cout << LOM->front().dis_Gx << " " <<  LOM->get_nodeNumber() << endl;
+  else {
+    int h = static_cast<int>(LOM->front().dis_Gx );
+    double dh = (LOM->front().dis_Gx-h)*60;
+    int min = static_cast<int>(dh);
+    double dmin = (dh - min)*60;
+    int s = static_cast<int>(dmin);
+    double ds = (dmin - s)*1000;
+    int ms = static_cast<int>(ds);
+    cout 
+      << h << ":" << min << ":" << s << ":" << ms
+      << " " <<  LOM->get_nodeNumber() << endl;
+  }
 
   /* ################################# 3 ################################# */
   /* ############################### CATCH ############################### */

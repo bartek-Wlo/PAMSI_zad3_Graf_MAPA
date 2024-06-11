@@ -399,7 +399,7 @@ node<miasto>* graf::opposite(const node<miasto>* c1, const node<polaczenia>* roa
     "\" is not connected to city: \"" + lista_miast->get_elem(c1).name +
     "\"\n           G_graf.cpp -> opposite(node<miasto>*, node<polaczenia>*)"
   );
-};
+}
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/ areAdjacent \_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/

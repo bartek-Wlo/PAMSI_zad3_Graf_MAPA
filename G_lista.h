@@ -136,6 +136,6 @@ node<E>* lista<E>::get_next(node<E>* ptr) const {
       ("node<E>* ptr == nullptr\n           G_lista.h -> get_next(node<E>*)");
   }
   return ptr->next;
-};
+}
 
 #endif

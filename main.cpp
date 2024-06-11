@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
   if(LENGTH_TIME == "TIME" ) G.set_time(true);
   else G.set_time(false);
 
-  //G.algorytm_Astar(miasto_1, miasto_2);
+  G.algorytm_Astar(miasto_1, miasto_2);
   G.algorytm_Dijkstra(miasto_1, miasto_2);
 
   return 0;
