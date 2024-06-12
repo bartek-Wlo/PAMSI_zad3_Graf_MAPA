@@ -28,13 +28,17 @@ private:
   string file_name;
   json data_json;
   map<string, unsigned int> indeks_map;
+  map<string, unsigned int> road_type_map;
   bool time;
+  unsigned int maxclass; 
+  unsigned int minclass;
 
   void open();
 
 public:
   void set_file_name(string s) {file_name = s;}
   void set_time(bool b) {time = b;}
+  void set_accessible_road(const string string_min, const string string_max);
   graf();
   ~graf();
   void load();
@@ -49,6 +53,7 @@ public:
   miasto get_str_miasto(node<miasto>* m) const;
   node<polaczenia>* get_road(const node<miasto>* c1, const node<miasto>* c2) const;
   int get_speed_limit(const std::string)const;
+  void display_time(const double czas) const;
 
 
   /* Zwraca odległość między miastami w linii krzywej (ziemia jest kulą) */

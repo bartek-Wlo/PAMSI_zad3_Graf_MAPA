@@ -6,6 +6,10 @@ graf::graf() : size_TAB_sasiedztwa(0) {
   lista_miast = new lista<miasto>;
   lista_polaczen = new lista<polaczenia>;
   time = false;
+  road_type_map["P"] = 2; road_type_map["p"] = 2;
+  road_type_map["K"] = 3; road_type_map["k"] = 3;
+  road_type_map["S"] = 4; road_type_map["s"] = 4;
+  road_type_map["A"] = 5; road_type_map["a"] = 5;
 
   file_name = "json/all_W_CONNECTIONS.json";
   // file_name = "json/Z_test_V2.json";
@@ -34,9 +38,36 @@ graf::~graf() {
 
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\   set accessible road   /‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+/* Ustawienie wartości na 1 albo 0 zewala na wszytkie połączenia           */
+/*         5 - autostrada                                                  */
+/*         4 - droga szybkiego ruchu                                       */
+/*         3 - droga krajowa                                               */
+/*         2 - droga powiatowa                                             */
+/*         1 - dowolna               połączenie promowe -> Nie ma takowych */
+/*         0 - dowolna                                                     */
+
+void graf::set_accessible_road(const string string_min, const string string_max) {
+  const unsigned int min = stoi(string_min);
+  const unsigned int max = stoi(string_max);
+  
+  if ((max > 1 && min > max) || min > 5) {
+    // cerr << "NOTFAUND" << endl;
+    // cerr << "Wszystkie typy dróg zostały WYKLUCZONE!!!" << endl << endl;
+    throw std::invalid_argument ("All road types have been EXCLUDED!!!");
+  }
+  if (max < 2 || max > 5) maxclass = 5; 
+  else maxclass = max;
+  minclass = min;
+}
+
+
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\   LOAD  /‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 void graf::load() {
+  unsigned int rode_type;
   open();
   
   for (const auto& city : data_json["cities"]) {
@@ -49,13 +80,16 @@ void graf::load() {
   }
 
   for (const auto& road : data_json["connections"]) {
-    lista_polaczen->addFront({
-      road["city_1"].get<string>(),
-      road["city_2"].get<string>(),
-      road["road_name"].get<string>(),
-      road["road_type"].get<string>(),
-      road["distance"].get<double>()
-    });
+    rode_type = road_type_map.at( road["road_type"].get<string>() );
+    if (rode_type >= minclass && rode_type <= maxclass) {
+      lista_polaczen->addFront({
+        road["city_1"].get<string>(),
+        road["city_2"].get<string>(),
+        road["road_name"].get<string>(),
+        road["road_type"].get<string>(),
+        road["distance"].get<double>()
+      });
+    }
   }
 }
 
@@ -283,6 +317,18 @@ int graf::get_speed_limit(const std::string limit_name) const{
       default:
           throw std::invalid_argument("Unknown rode type\n           G_graf.cpp -> get_speed_limit(const std::string limit_name)");
   }
+}
+
+/*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
+void graf::display_time(const double czas) const {
+  int    h    = static_cast<int>( czas );
+  double dh   = (czas - h) *60;
+  int    min  = static_cast<int>( dh   );
+  double dmin = (dh - min) *60;
+  int    s    = static_cast<int>( dmin );
+  double ds   = (dmin - s) *1000;
+  int    ms   = static_cast<int>( ds   );
+  cout << h << ":" << min << ":" << s << "." << ms;
 }
 
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/

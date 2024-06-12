@@ -2,7 +2,7 @@
 # make clean -> komenda do usunie wszystkie pliki obiektowe i plik wykonywalny
 
 CXX = g++
-CXXFLAGS = -Wall -Wextra -pedantic -Werror=return-type -Werror=parentheses -Werror=vla -Werror=array-bounds -Wcast-qual -Wmaybe-uninitialized
+CXXFLAGS = -Wall -Wextra -pedantic -Werror=return-type -Werror=parentheses -Werror=vla -Werror=array-bounds -Wcast-qual -Wmaybe-uninitialized 
 
 TARGET = wykonywalny.out
 SRCS = $(wildcard *.cpp)

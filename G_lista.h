@@ -98,6 +98,7 @@ void lista<E>::removeInside(node<E> **ptr_to_elem_being_removed) {
   }
   if (head == *ptr_to_elem_being_removed) {
     removeFront();
+    *ptr_to_elem_being_removed = head;
     return;
   }
   while (looking->next != *ptr_to_elem_being_removed) {

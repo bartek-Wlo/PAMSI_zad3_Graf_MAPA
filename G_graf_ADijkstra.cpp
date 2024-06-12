@@ -71,19 +71,11 @@ void graf::algorytm_Dijkstra(const string& city_1, const string& city_2) {
     }
     if(!time)
       cout 
-        << /* Dystans */ distance[indeks_map.at(city_2)] << " "
+        << /* Dystans */ distance[indeks_map.at(city_2)] << "  "
         << /* Wężły przeanalizowane */ Queue->get_nodeNumber()+1 << endl;
     else {
-      int h = static_cast<int>(distance[indeks_map.at(city_2)] );
-      double dh = (distance[indeks_map.at(city_2)] - h)*60;
-      int min = static_cast<int>(dh);
-      double dmin = (dh - min)*60;
-      int s = static_cast<int>(dmin);
-      double ds = (dmin - s)*1000;
-      int ms = static_cast<int>(ds);
-      cout 
-        << h << ":" << min << ":" << s << ":" << ms
-        << " " << Queue->get_nodeNumber()+1 << endl;
+      display_time( distance[indeks_map.at(city_2)] );
+      cout << "  " <<  Queue->get_nodeNumber() + 1 << endl;
     }
     // cout 
     // << /* Dystans */ distance[indeks_map.at(city_2)] << " "
