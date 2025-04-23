@@ -1,4 +1,5 @@
 # GRAF
+G_Algorytm_.cpp i G_Algorytm_.h to jakaś pozostałość i raczej nie jest istotna
 
 
 
