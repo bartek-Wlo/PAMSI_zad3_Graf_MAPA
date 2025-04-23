@@ -1,0 +1,58 @@
+{
+    "cities" : [ {
+        "name" : "A",
+        "id" : "a",
+        "latitude" : 52.60150935443801,
+        "longitude" : 16.003098206044736
+    }, {
+       "name" : "B",
+        "id" : "b",
+        "latitude" : 52.60150935443801,
+        "longitude" : 19.027796193438363
+    }, {
+       "name" : "C",
+        "id" : "c",
+        "latitude" : 52.60150935443801,
+        "longitude" : 21.971715917664913
+
+    }, {
+       "name" : "D",
+        "id" : "d",
+        "latitude" : 53.309813245046996,
+        "longitude" : 19.027796193438363
+    }, {
+       "name" : "F",
+        "id" : "f",
+        "latitude" : 50.577752051338614,
+        "longitude" : 16.003098206044736
+    }
+    ],
+
+
+    "connections" : [ {
+        "city_1": "a",
+        "city_2": "b",
+        "road_name": "test_1",
+        "road_type": "P",
+        "distance": 204.257
+    }, {
+        "city_1": "a",
+        "city_2": "d",
+        "road_name": "test_2",
+        "road_type": "P",
+        "distance": 217.365
+    }, {
+        "city_1": "b",
+        "city_2": "f",
+        "road_name": "test_3",
+        "road_type": "P",
+        "distance": 307.035
+    }, {
+        "city_1": "f",
+        "city_2": "c",
+        "road_name": "test_4",
+        "road_type": "P",
+        "distance": 469.537
+    }
+    ]
+}
