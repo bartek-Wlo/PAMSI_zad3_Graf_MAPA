@@ -1,6 +1,73 @@
 # GRAF
 G_Algorytm_.cpp i G_Algorytm_.h to jakaś pozostałość i raczej nie jest istotna
 
+# Opis
+0. Kompilacja na diablo (-std=c++11)
+1. Argumenty wywołania
+2. Kompilacja           (make)
+3. Wersja algorytmu
+4. valgrind
+6. Przykład działania
+
+
+______________________________________________________________________________________
+0. Uruchamianie na Diablo
+Nie jest możliwe skompilowanie programu na DIABLO, ale na Panamint działa.
+
+______________________________________________________________________________________
+1. Argumenty wywołania:
+1.1. Bez argumentów wywołania program -> poprosi o ich podanie
+1.2. prog.out town1 town2 [ (LENGTH|TIME) [maxclass [minclass [path ]]] ]
+1.3. prog.out < town1 >  < town2 >  [ TIME ] [ maxclass ] [ minclass ] [ path ]
+
+I.   town1 -> Miasto wyjściowe
+II.  town2 -> Miasto docelowe
+III. TIME -> podanie TIME spowoduje liczenie po czasie, cokolwiek innego po drodze
+IV.  maxclass -> dla 0 i 1 zezwala wszytkie, 2 - 5 max jakość drogi
+V.   minclass -> dla 0 i 1 zezwala wszytkie, 2 - 5 min jakość drogi
+
+VI.  path -> podanie zmienia ścieżkę skąd wczytyje 
+             DOMYŚLNIE program wczytuje: "json/all_W_CONNECTIONS.json".
+             
+______________________________________________________________________________________
+2. Kompilacja:
+Dostarczony plik makefile
+-> make
+Make jest ustawiony by kompilować wszytkie pliki w folderze
+
+g++ main.cpp G_graf_ADijkstra.cpp G_graf_Astar.cpp G_graf.cpp G_struckt.h G_lista.h
+______________________________________________________________________________________
+3. Dijkstra -- A*                                    WYBÓR ALGORYTMU SZUKAJĄCEGO DROGI
+             4   int main(int argc, char *argv[]) {
+             ...
+             44     // G.algorytm_Astar(miasto_1, miasto_2);
+             45     G.algorytm_Dijkstra(miasto_1, miasto_2);
+             46 
+             47     retrun 0;
+Można zmienić algorytm szukający na A* odkomentowująć 44 linie kodu.
+Algorytmy się nie gryzą tzn. mogą być oba uruchomione na raz.
+______________________________________________________________________________________
+4. SPRAWDZANIE WYCIEKÓW PAMIĘCI
+4.1. Zainstaluj valgrind
+
+4.2. Skompiluj swój program
+Poprzez DODANIE flagi -g
+MakeFile:
+CXXFLAGS = -Wall -Wextra -pedantic -Werror=return-type -Werror=parentheses -Werror=vla -Werror=array-bounds -Wcast-qual -Wmaybe-uninitialized -g
+
+4.3. Uruchom Valgrind
+valgrind --leak-check=full ./wykonywalny.out 
+
+_____________________________________________________________________________________
+5. MAPA polski: https://www.google.com/maps/d/u/0/edit?mid=1ouw5HIxfZKwS60-mp5EXgBSDTGvWBCk&usp=sharing
+
+______________________________________________________________________________________
+6.0. Przykładowe uruchomienie:
+./wykonywalny.out Wroclaw Warszawa
+6.1. efekt: 
+Wroclaw Lodz Brzeziny Skierniewice Zyrardow GrodziskMazowiecki Pruszkow Warszawa 359.7 441
+
+
 
 
 ## Getting started
